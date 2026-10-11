@@ -2,6 +2,7 @@
 
 from collections.abc import Awaitable
 
+from e3dc_ess_modbus import E3dcError
 from modbus_connection import ModbusError
 import probatio
 
@@ -77,7 +78,7 @@ async def _write(entry: E3dcConfigEntry, write: Awaitable[None]) -> None:
             translation_domain=DOMAIN,
             translation_key="invalid_action_value",
         ) from err
-    except ModbusError as err:
+    except (ModbusError, E3dcError) as err:
         raise HomeAssistantError(
             translation_domain=DOMAIN,
             translation_key="write_failed",

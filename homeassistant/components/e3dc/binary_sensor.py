@@ -62,11 +62,11 @@ STATION_BINARY_SENSORS: tuple[E3dcBinarySensorDescription, ...] = (
     E3dcBinarySensorDescription(
         key="power_output_ready",
         translation_key="power_output_ready",
-        component="grid_control",
+        component="grid_status",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda device: (
-            grid.power_output_ready
-            if (grid := device.grid_control) is not None
+            status.power_output_ready
+            if (status := device.grid_status) is not None
             else None
         ),
     ),

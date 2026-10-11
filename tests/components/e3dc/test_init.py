@@ -153,7 +153,7 @@ async def test_every_component_failing_marks_the_poll_failed(
     mock_unit: MockModbusUnit,
 ) -> None:
     """Test a poll where no component answers fails as a whole."""
-    for index in (40068, 40096, 40088, 40105, 40137, 40202, 41000):
+    for index in (40068, 40096, 40088, 40105, 40137, 40188, 40200, 40202, 41000):
         mock_unit.fail_read(register(index), IllegalDataAddressError())
     freezer.tick(_SCAN)
     async_fire_time_changed(hass)

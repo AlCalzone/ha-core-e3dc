@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any, override
 
-from e3dc_ess_modbus import E3dcPowerStation
+from e3dc_ess_modbus import E3dcError, E3dcPowerStation
 from modbus_connection import ModbusError
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
@@ -42,14 +42,10 @@ def wallbox_switches(number: int) -> list[E3dcSwitchEntityDescription]:
             translation_key="charging_enabled",
             component="wallboxes",
             part=part,
-            value_fn=lambda device: (
-                None
-                if (aborted := device.wallboxes.slots[number].charging_aborted) is None
-                else not aborted
-            ),
+            value_fn=lambda device: device.wallboxes.slots[number].charging_allowed,
             write_fn=lambda device, value: device.wallboxes.slots[
                 number
-            ].async_write_charging(value),
+            ].async_write_charging_allowed(value),
         ),
         E3dcSwitchEntityDescription(
             key=f"wallbox_{number}_solar_mode",
@@ -108,7 +104,7 @@ class E3dcSwitch(E3dcEntity, SwitchEntity):
         """Write the switch state to the device."""
         try:
             await self.entity_description.write_fn(self.coordinator.device, value)
-        except ModbusError as err:
+        except (ModbusError, E3dcError) as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
                 translation_key="write_failed",

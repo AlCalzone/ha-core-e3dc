@@ -481,6 +481,8 @@
       'wallboxes',
       'power_meters',
       'wide_power_meters',
+      'grid_status',
+      'inverter_mode_control',
       'battery_limits',
       'inverters',
     ]),
@@ -489,7 +491,6 @@
     'settings_components': list([
       'grid_control',
       'battery_control',
-      'inverter_mode_control',
     ]),
     'wallboxes': list([
       0,

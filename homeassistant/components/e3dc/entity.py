@@ -75,7 +75,7 @@ class E3dcEntity(CoordinatorEntity[E3dcDataUpdateCoordinator]):
 
 def present_wallboxes(device: E3dcPowerStation) -> list[int]:
     """The wallbox slots the power station reports as configured."""
-    return [number for number, _ in device.wallboxes.configured]
+    return list(device.wallboxes.configured)
 
 
 def present_inverters(device: E3dcPowerStation) -> list[int]:

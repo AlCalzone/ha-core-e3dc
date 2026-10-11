@@ -42,7 +42,7 @@ async def async_get_config_entry_diagnostics(
             "readings_components": device.readings_components,
             "settings_components": device.settings_components,
             "inverters": sorted(device.inverters or ()),
-            "wallboxes": [number for number, _ in device.wallboxes.configured],
+            "wallboxes": list(device.wallboxes.configured),
             "read_error": read_error,
             "raw": raw,
         },

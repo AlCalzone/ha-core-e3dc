@@ -58,7 +58,7 @@ def _dc_string_value(
     """Read ``attribute`` of DC string ``number``."""
 
     def _value(device: E3dcPowerStation) -> StateType:
-        value: StateType = getattr(device.dc_strings[number - 1], attribute)
+        value: StateType = getattr(device.dc_strings[number], attribute)
         return value
 
     return _value
@@ -70,7 +70,9 @@ def _meter_phase_value(
     """Read the power on ``phase`` of power meter slot ``number``."""
 
     def _value(device: E3dcPowerStation) -> StateType:
-        value: StateType = getattr(device.power_meter(number), f"power_{phase}")
+        value: StateType = getattr(
+            device.power_meter_readings[number], f"power_{phase}"
+        )
         return value
 
     return _value
@@ -318,7 +320,7 @@ def _power_meter_sensors(number: int) -> list[E3dcSensorDescription]:
             device_class=SensorDeviceClass.ENUM,
             options=_enum_options(PowerMeterType),
             entity_category=EntityCategory.DIAGNOSTIC,
-            value_fn=lambda device: device.power_meter(number).meter_type,
+            value_fn=lambda device: device.power_meter_readings[number].meter_type,
         ),
         E3dcSensorDescription(
             key=f"power_meter_{number}_power",
@@ -329,7 +331,7 @@ def _power_meter_sensors(number: int) -> list[E3dcSensorDescription]:
             state_class=SensorStateClass.MEASUREMENT,
             value_fn=lambda device: _sum(
                 (
-                    (meter := device.power_meter(number)).power_l1,
+                    (meter := device.power_meter_readings[number]).power_l1,
                     meter.power_l2,
                     meter.power_l3,
                 )
@@ -489,8 +491,8 @@ def _descriptions(runtime_data: E3dcRuntimeData) -> list[E3dcSensorDescription]:
     device = runtime_data.device
     served = runtime_data.served_components
     descriptions = [d for d in STATION_SENSORS if d.component in served]
-    for number in range(len(device.power_meters.meters)):
-        if device.power_meter(number).is_installed:
+    for number, meter in device.power_meter_readings.items():
+        if meter.is_installed:
             descriptions.extend(_power_meter_sensors(number))
     return descriptions
 
