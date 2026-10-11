@@ -10,38 +10,29 @@ from e3dc_ess_modbus.wallbox import WALLBOX_COUNT
 
 from homeassistant.components.modbus import async_get_unit
 from homeassistant.config_entries import ConfigEntryState
-from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
+from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryError, HomeAssistantError
-from homeassistant.helpers import config_validation as cv, device_registry as dr
-from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers import device_registry as dr
 
 from .config_flow import create_modbus_params
 from .const import DOMAIN, SCAN_INTERVAL, SETTINGS_SCAN_INTERVAL, UNIT_ID
 from .coordinator import E3dcConfigEntry, E3dcDataUpdateCoordinator, E3dcRuntimeData
 from .entity import part_identifier, present_meters, present_wallboxes
 from .holds import SetpointHolds
-from .services import async_setup_services
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
+    Platform.NUMBER,
     Platform.SENSOR,
     Platform.SWITCH,
 ]
-
-CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 _PART_COUNTS = {
     "wallbox": WALLBOX_COUNT,
     "power_meter": POWER_METER_COUNT,
     "inverter": INVERTER_COUNT,
 }
-
-
-async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Set up the E3/DC integration."""
-    async_setup_services(hass)
-    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool:
@@ -97,6 +88,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool
 
     holds = SetpointHolds(hass, entry, device, _notify_holds)
     entry.runtime_data = E3dcRuntimeData(readings, settings, station.id, holds)
+
+    # Home Assistant doesn't unload entries when it stops
+    async def _async_release_on_stop(event: Event) -> None:
+        await holds.async_stop_all()
+
+    entry.async_on_unload(
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_release_on_stop)
+    )
     _async_remove_stale_devices(hass, entry)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -129,7 +128,11 @@ def _part_of(serial: str, identifier: str) -> tuple[str, int] | None:
 
 @callback
 def _async_remove_stale_devices(hass: HomeAssistant, entry: E3dcConfigEntry) -> None:
-    """Remove the devices of parts the power station no longer reports."""
+    """Remove the devices of power meters that are no longer configured.
+
+    A wallbox that is switched off, or an inverter slot that times out once,
+    looks the same as one that is gone. Those are left to be removed by hand.
+    """
     serial = entry.unique_id
     assert serial is not None
     if (reported := _reported_parts(entry.runtime_data)) is None:
@@ -140,7 +143,7 @@ def _async_remove_stale_devices(hass: HomeAssistant, entry: E3dcConfigEntry) -> 
             if domain != DOMAIN or (part := _part_of(serial, identifier)) is None:
                 continue
             kind, number = part
-            if number not in reported[kind]:
+            if kind == "power_meter" and number not in reported[kind]:
                 registry.async_remove_device(device_entry.id)
 
 
@@ -179,6 +182,8 @@ async def async_remove_config_entry_device(
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool:
-    """Unload a config entry, handing every held setpoint back first."""
+    """Unload a config entry and hand every held setpoint back."""
+    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        return False
     await entry.runtime_data.holds.async_stop_all()
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    return True

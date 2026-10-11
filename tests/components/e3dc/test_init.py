@@ -306,7 +306,7 @@ async def test_setup_removes_devices_of_parts_that_are_gone(
     mock_config_entry: MockConfigEntry,
     mock_get_unit: MagicMock,
 ) -> None:
-    """Test setup drops the devices of parts the power station no longer reports."""
+    """Test setup drops the devices of meters that are gone, and nothing else."""
     mock_config_entry.add_to_hass(hass)
     for part in ("wallbox_3", "power_meter_5", "power_meter_0", "inverter_0"):
         device_registry.async_get_or_create(
@@ -324,7 +324,7 @@ async def test_setup_removes_devices_of_parts_that_are_gone(
             is not None
         )
 
-    assert not present("wallbox_3")
+    assert present("wallbox_3")
     assert not present("power_meter_5")
     assert present("power_meter_0")
     assert present("inverter_0")
@@ -358,6 +358,7 @@ async def test_setup_keeps_devices_when_a_block_failed(
         pytest.param("power_meter_0", False, id="installed_meter"),
         pytest.param("power_meter_5", True, id="gone_meter"),
         pytest.param("inverter_0", False, id="answering_inverter"),
+        pytest.param("wallbox_3", True, id="unconfigured_wallbox"),
     ],
 )
 async def test_remove_a_part(

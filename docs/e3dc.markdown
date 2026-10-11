@@ -12,6 +12,7 @@ ha_domain: e3dc
 ha_platforms:
   - binary_sensor
   - diagnostics
+  - number
   - sensor
   - switch
 ha_config_flow: true
@@ -32,7 +33,7 @@ The **E3/DC** {% term integration %} connects Home Assistant to an E3/DC home po
 
 The integration supports E3/DC home power stations whose Modbus interface uses the E3/DC protocol ("Simple Mode"), such as the S10 E, S10 E PRO, S10 X and S20 X PRO, and the systems running the Q10 and P10 firmware lines.
 
-Newer firmware releases add registers: 32-bit power meter values, inverter data, remote control of the feed-in limit and the battery (from release 2025_06 and 2025_40), and the battery's limits and stored energy (from release 2026_04). The integration checks which of these your firmware serves during setup and adds only the matching entities and actions.
+Newer firmware releases add registers: 32-bit power meter values, inverter data, remote control of the feed-in limit and the battery (from release 2025_06 and 2025_40), and the battery's limits and stored energy (from release 2026_04). The integration checks which of these your firmware serves during setup and adds only the matching entities.
 
 ## Unsupported devices
 
@@ -81,7 +82,6 @@ The power station device has these sensors:
 - **Emergency power**: whether emergency power is active, inactive, not available or not supported. On the S10 E and S10 E PRO, **Motor switch off** means the emergency power motor switch is not in its on position.
 - **DC string 1 power** and **DC string 2 power**, plus their voltage and current, which are disabled by default.
 - **Stored energy**, **Battery capacity**, **Maximum charge power** and **Maximum discharge power**, on firmware 2026_04 and later.
-- **Battery power setpoint**, **Feed-in limit setpoint** and **Active power limit setpoint**: the value the integration holds, or unknown while it holds none.
 - **Inverter mode**, the failsafe timeouts and the **SG Ready status**, as diagnostic sensors.
 
 Each configured power meter gets its own device with its type, its total power, and the power per phase, which is disabled by default. The power station's own inverter and each additional solar inverter also get a device with their power, voltage, current and frequency per phase. Most inverter sensors are disabled by default.
@@ -94,11 +94,22 @@ Each configured power meter gets its own device with its type, its total power, 
 - **Feed-in limited**: output is throttled because the maximum feed-in was reached.
 - **Charging lockout period** and **Discharging lockout period**: a lockout time from **Smart Charge** is active. Disabled by default.
 - **Power output ready**: the inverter, DC-DC converter and battery are ready to deliver power.
-- **Remote battery control**: the integration holds a battery power setpoint.
 
 Each wallbox gets its own device with **Charging**, **Type 2 plug**, **Type 2 plug locked** and **Type F plug** binary sensors.
 
-### Switches
+### Numbers and switches for remote control
+
+On firmware that supports remote control, the power station device has three setpoints. Each is a number and a switch:
+
+- **Battery power setpoint** and **Battery power control**: charge (positive) or discharge (negative) the battery at a fixed power. PV power charges first, and the grid makes up the rest.
+- **Feed-in limit** and **Feed-in limit control**: cap the power fed into the grid.
+- **Active power limit** and **Active power limit control**: cap the inverter's output, as a percentage of its rated power. The cap ignores the house's consumption.
+
+Setting a number writes the value to the power station and turns its switch on. The power station drops a setpoint 30 seconds after the last write, so while the switch is on, the integration writes the value again every 10 seconds. Turning the switch off hands control back: remote battery control ends at once, the active power limit goes back to 100 %, and the feed-in limit lapses within 30 seconds. Turning the switch on again holds the last value set.
+
+A switch shows unknown while writing to the power station fails, because the power station may have dropped the setpoint. If a setpoint spans two registers and can only be half-written, setting it fails and the error says what the integration tried to put back.
+
+### Wallbox switches
 
 Each wallbox has these switches:
 
@@ -106,61 +117,7 @@ Each wallbox has these switches:
 - **Solar charging**: charge from solar power only. Turn off for hybrid charging, which also draws from the grid and the battery.
 - **Single-phase charging**: charge on one phase instead of three.
 
-Wallboxes, power meters and additional inverters appear when the power station reports them, including ones you add later. When the integration loads, it removes the devices of wallboxes and meters that are no longer configured, and of inverter slots that no longer answer. You can also delete such a device yourself.
-
-## Actions
-
-All actions require an administrator and are available only on firmware that serves the registers they write.
-
-The power station drops a remote setpoint 30 seconds after the last write. The integration writes a setpoint again every 10 seconds until you stop it, its duration runs out, or the integration unloads. The **Remote battery control** binary sensor and the setpoint sensors show what the integration is holding.
-
-### Action: Set battery power
-
-The `e3dc.set_battery_power` action charges or discharges the battery at a fixed power, and holds it. Positive values charge, negative values discharge. PV power charges the battery first, and the grid makes up the rest.
-
-| Data attribute | Optional | Description |
-| --- | --- | --- |
-| `config_entry_id` | no | The power station to control. |
-| `power` | no | The battery power in watts. |
-| `duration` | yes | How long to hold the setpoint. Without it, the setpoint holds until you stop it. |
-
-### Action: Stop battery control
-
-The `e3dc.stop_battery_control` action stops holding the battery power and hands the battery back to the power station at once.
-
-| Data attribute | Optional | Description |
-| --- | --- | --- |
-| `config_entry_id` | no | The power station to control. |
-
-### Action: Set feed-in limit
-
-The `e3dc.set_feed_in_limit` action caps the power fed into the grid, and holds the limit.
-
-| Data attribute | Optional | Description |
-| --- | --- | --- |
-| `config_entry_id` | no | The power station to control. |
-| `power` | no | The most power to feed into the grid, in watts. |
-| `duration` | yes | How long to hold the limit. Without it, the limit holds until you clear it. |
-
-### Action: Set active power limit
-
-The `e3dc.set_active_power_limit` action caps the inverter's active power as a percentage of its rated power, and holds the cap. The cap ignores the house's consumption.
-
-| Data attribute | Optional | Description |
-| --- | --- | --- |
-| `config_entry_id` | no | The power station to control. |
-| `limit` | no | The output ceiling, in percent of rated power. |
-| `duration` | yes | How long to hold the cap. Without it, the cap holds until you clear it. |
-
-### Action: Clear grid limits
-
-The `e3dc.clear_grid_limits` action stops holding the feed-in limit and the active power limit. The active power limit goes back to 100 %, and the feed-in limit lapses within 30 seconds.
-
-| Data attribute | Optional | Description |
-| --- | --- | --- |
-| `config_entry_id` | no | The power station to control. |
-
-If a two-register setpoint can only be half-written, the action fails and says what it put back: remote battery control ends, or the previous feed-in limit is restored.
+Wallboxes, power meters and additional inverters appear when the power station reports them, including ones you add later. When the integration loads, it removes the devices of power meters that are no longer configured. A wallbox that is switched off, or an inverter that doesn't answer, looks the same as one that is gone, so you delete those devices yourself.
 
 ## Examples
 
@@ -187,17 +144,18 @@ actions:
           - condition: trigger
             id: cheap
         sequence:
-          - action: e3dc.set_battery_power
+          - action: number.set_value
+            target:
+              entity_id: number.s10_x_battery_power_setpoint
             data:
-              config_entry_id: YOUR_CONFIG_ENTRY_ID
-              power: 3000
+              value: 3000
       - conditions:
           - condition: trigger
             id: expensive
         sequence:
-          - action: e3dc.stop_battery_control
-            data:
-              config_entry_id: YOUR_CONFIG_ENTRY_ID
+          - action: switch.turn_off
+            target:
+              entity_id: switch.s10_x_battery_power_control
 ```
 
 {% endraw %}
@@ -229,7 +187,7 @@ If one block of registers fails to read, only the entities from that block becom
 
 - The power station has no energy counters over Modbus. To use it on the Energy dashboard, create [Integral](/integrations/integration/) helpers from the power sensors.
 - The manual names the wallbox control bits, but which ones work depends on the wallbox model.
-- A setpoint is held while Home Assistant runs. After a restart, the power station returns to its own control within 30 seconds, and the automation that set it has to set it again.
+- A setpoint is held while Home Assistant runs. When Home Assistant stops, the integration hands every setpoint back. If that fails, the battery power and the feed-in limit lapse within 30 seconds. The active power limit lasts for the active power failsafe timeout, after which the active power failsafe value applies. With a failsafe timeout of 0, it lasts until it is written again. After a restart, set the setpoint again.
 
 ## Troubleshooting
 
@@ -242,9 +200,9 @@ Setup reports this when register 40001 does not hold the E3/DC identifier. Check
 - Check that Modbus is turned on and the port matches.
 - Check that Home Assistant is in the same subnet as the power station.
 
-### An action says the power station does not support it
+### The remote control numbers and switches are missing
 
-The firmware does not serve the registers the action writes. Update the power station's firmware.
+The firmware does not serve the remote control registers. Update the power station's firmware.
 
 ## Removing the integration
 

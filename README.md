@@ -16,7 +16,7 @@ docs/e3dc.markdown               the page for home-assistant.io
 - Two coordinators: measurements every 5 seconds, remote control settings every 60.
 - Sensors for the power flows, battery, DC strings, power meters and inverters, and binary sensors for the EMS status bits.
 - A device per wallbox, with charging, solar mode and phase switches. Wallboxes the power station reports later are added on the fly.
-- Actions that set and hold the battery power, the feed-in limit and the active power limit, rewriting them every 10 seconds until stopped, and actions that end the holds.
+- A number and a switch per remote setpoint (battery power, feed-in limit, active power limit). Setting the number writes it, and the integration rewrites it every 10 seconds while the switch is on.
 - Diagnostics with the raw register dump. The serial number registers are left out.
 
 It takes its Modbus unit from core's `modbus` integration with `async_get_unit`, so it shares the connection with any other integration that talks to the same power station.

@@ -15,14 +15,13 @@ from homeassistant.const import EntityCategory, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import E3dcConfigEntry, E3dcRuntimeData
+from .coordinator import E3dcConfigEntry
 from .entity import (
     E3dcEntity,
     E3dcEntityDescription,
     async_add_part_entities,
     present_wallboxes,
 )
-from .holds import BATTERY_POWER
 
 PARALLEL_UPDATES = 0
 
@@ -126,8 +125,7 @@ async def async_setup_entry(
         for description in STATION_BINARY_SENSORS
         if description.component in served
     )
-    if "battery_control" in served:
-        async_add_entities([E3dcRemoteBatteryControlSensor(runtime_data)])
+
     async_add_part_entities(
         entry,
         Platform.BINARY_SENSOR,
@@ -150,33 +148,3 @@ class E3dcBinarySensor(E3dcEntity, BinarySensorEntity):
     @override
     def is_on(self) -> bool | None:
         return self.entity_description.value_fn(self.coordinator.device)
-
-
-@dataclass(frozen=True, kw_only=True)
-class E3dcHoldBinarySensorDescription(
-    E3dcEntityDescription, BinarySensorEntityDescription
-):
-    """Describe a binary sensor showing whether a setpoint is held."""
-
-
-class E3dcRemoteBatteryControlSensor(E3dcEntity, BinarySensorEntity):
-    """Whether the integration holds a battery power setpoint."""
-
-    entity_description: E3dcHoldBinarySensorDescription
-
-    def __init__(self, runtime_data: E3dcRuntimeData) -> None:
-        """Initialize the sensor."""
-        super().__init__(
-            runtime_data,
-            E3dcHoldBinarySensorDescription(
-                key="remote_battery_control",
-                translation_key="remote_battery_control",
-                component="battery_control",
-            ),
-        )
-        self._holds = runtime_data.holds
-
-    @property
-    @override
-    def is_on(self) -> bool:
-        return self._holds.get(BATTERY_POWER) is not None

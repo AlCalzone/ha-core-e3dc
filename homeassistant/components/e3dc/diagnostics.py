@@ -9,6 +9,7 @@ from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.core import HomeAssistant
 
 from .coordinator import E3dcConfigEntry
+from .holds import SETPOINTS
 
 TO_REDACT = {"serial_number"}
 
@@ -59,8 +60,12 @@ async def async_get_config_entry_diagnostics(
                 )
             },
             "held_setpoints": {
-                key: hold.value
-                for key in ("battery_power", "feed_in_limit", "active_power_limit")
+                key: {
+                    "value": hold.value,
+                    "failing": hold.failing,
+                    "releasing": hold.releasing,
+                }
+                for key in SETPOINTS
                 if (hold := runtime_data.holds.get(key)) is not None
             },
             "read_error": read_error,
