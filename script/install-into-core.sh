@@ -37,8 +37,8 @@ fi
 
 cd "$core"
 "$python" -m script.translations develop --integration e3dc
-# The quality_scale plugin fails until the brands entry exists, and a failed
-# plugin cancels generation, so run only the plugins that generate files.
+# Run only the plugins that generate files. The quality_scale plugin fails
+# until the brands entry exists, and any failure cancels generation.
 PATH="$core/.venv/bin:$PATH" "$python" -m script.hassfest \
   -p codeowners,config_flow,mypy_config,translations
 PATH="$core/.venv/bin:$PATH" "$python" -m script.gen_requirements_all
