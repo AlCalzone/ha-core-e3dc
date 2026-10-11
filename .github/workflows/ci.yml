@@ -41,7 +41,7 @@ jobs:
             "e3dc-ess-modbus @ git+https://github.com/AlCalzone/e3dc-ess-modbus@main"
       - name: Generate translations
         working-directory: core
-        run: .venv/bin/python -m script.translations develop --integration e3dc
+        run: .venv/bin/python -m script.translations develop --all
       - name: Run the tests
         working-directory: core
         run: >
