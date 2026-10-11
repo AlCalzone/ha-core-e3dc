@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Catch changes on core's dev branch that break the integration
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test against core dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          path: integration
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: home-assistant/core
+          ref: dev
+          path: core
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - name: Copy the integration into core
+        run: integration/script/install-into-core.sh core
+      - name: Install core and the test dependencies
+        working-directory: core
+        run: |
+          uv venv .venv --python 3.14
+          pin() { grep -ihE "^$1==" requirements_all.txt homeassistant/package_constraints.txt | head -1; }
+          uv pip install --python .venv/bin/python -e . -r requirements_test.txt -r requirements_test_pre_commit.txt \
+            "$(pin 'modbus-connection\[tmodbus\]')" "$(pin tmodbus)" "$(pin pymodbus)" \
+            "$(pin paho-mqtt)" "$(pin aiohasupervisor)" \
+            "e3dc-ess-modbus @ git+https://github.com/AlCalzone/e3dc-ess-modbus@main"
+      - name: Generate translations
+        working-directory: core
+        run: .venv/bin/python -m script.translations develop --integration e3dc
+      - name: Run the tests
+        working-directory: core
+        run: >
+          .venv/bin/python -m pytest tests/components/e3dc
+          --cov=homeassistant.components.e3dc --cov-report=term-missing
+          --cov-fail-under=95
+      - name: Ruff
+        working-directory: core
+        run: |
+          .venv/bin/ruff check homeassistant/components/e3dc tests/components/e3dc
+          .venv/bin/ruff format --check homeassistant/components/e3dc tests/components/e3dc
