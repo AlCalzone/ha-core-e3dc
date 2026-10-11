@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_all_entities[number.s10_x_active_power_limit-entry]
+# name: test_all_entities[number.s10_x_active_power_limit_setpoint-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -18,7 +18,7 @@
     'disabled_by': None,
     'domain': 'number',
     'entity_category': None,
-    'entity_id': 'number.s10_x_active_power_limit',
+    'entity_id': 'number.s10_x_active_power_limit_setpoint',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -26,12 +26,12 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Active power limit',
+    'object_id_base': 'Active power limit setpoint',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Active power limit',
+    'original_name': 'Active power limit setpoint',
     'platform': 'e3dc',
     'previous_unique_id': None,
     'suggested_object_id': None,
@@ -41,10 +41,10 @@
     'unit_of_measurement': '%',
   })
 # ---
-# name: test_all_entities[number.s10_x_active_power_limit-state]
+# name: test_all_entities[number.s10_x_active_power_limit_setpoint-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Active power limit',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Active power limit setpoint',
       <NumberEntityCapabilityAttribute.MAX: 'max'>: 100,
       <NumberEntityCapabilityAttribute.MIN: 'min'>: 0,
       <NumberEntityCapabilityAttribute.MODE: 'mode'>: <NumberMode.BOX: 'box'>,
@@ -52,7 +52,7 @@
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '%',
     }),
     'context': <ANY>,
-    'entity_id': 'number.s10_x_active_power_limit',
+    'entity_id': 'number.s10_x_active_power_limit_setpoint',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
@@ -120,7 +120,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[number.s10_x_feed_in_limit-entry]
+# name: test_all_entities[number.s10_x_feed_in_limit_setpoint-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -139,7 +139,7 @@
     'disabled_by': None,
     'domain': 'number',
     'entity_category': None,
-    'entity_id': 'number.s10_x_feed_in_limit',
+    'entity_id': 'number.s10_x_feed_in_limit_setpoint',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -147,12 +147,12 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Feed-in limit',
+    'object_id_base': 'Feed-in limit setpoint',
     'options': dict({
     }),
     'original_device_class': <NumberDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Feed-in limit',
+    'original_name': 'Feed-in limit setpoint',
     'platform': 'e3dc',
     'previous_unique_id': None,
     'suggested_object_id': None,
@@ -162,11 +162,11 @@
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
 # ---
-# name: test_all_entities[number.s10_x_feed_in_limit-state]
+# name: test_all_entities[number.s10_x_feed_in_limit_setpoint-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Feed-in limit',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Feed-in limit setpoint',
       <NumberEntityCapabilityAttribute.MAX: 'max'>: 100000,
       <NumberEntityCapabilityAttribute.MIN: 'min'>: 0,
       <NumberEntityCapabilityAttribute.MODE: 'mode'>: <NumberMode.BOX: 'box'>,
@@ -174,7 +174,7 @@
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfPower.WATT: 'W'>,
     }),
     'context': <ANY>,
-    'entity_id': 'number.s10_x_feed_in_limit',
+    'entity_id': 'number.s10_x_feed_in_limit_setpoint',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

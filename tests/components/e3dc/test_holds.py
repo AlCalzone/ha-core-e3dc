@@ -1,14 +1,21 @@
 """Tests for the setpoints the E3/DC integration holds."""
 
 import asyncio
-from unittest.mock import AsyncMock
+from datetime import timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
 
+from e3dc_ess_modbus import Setpoint
 from e3dc_ess_modbus.model import register
 from freezegun.api import FrozenDateTimeFactory
-from modbus_connection import IllegalFunctionError, ModbusTimeoutError
+from modbus_connection import (
+    IllegalDataAddressError,
+    IllegalFunctionError,
+    ModbusTimeoutError,
+)
 from modbus_connection.mock import MockModbusUnit, WriteEvent
 import pytest
 
+from homeassistant.components.e3dc.const import SETTINGS_SCAN_INTERVAL
 from homeassistant.components.e3dc.holds import REWRITE_INTERVAL
 from homeassistant.components.number import (
     ATTR_VALUE,
@@ -26,16 +33,20 @@ from homeassistant.const import (
     STATE_UNKNOWN,
     Platform,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError
 
-from tests.common import MockConfigEntry, async_fire_time_changed
+from tests.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+    mock_restore_cache_with_extra_data,
+)
 
 BATTERY_POWER = "number.s10_x_battery_power_setpoint"
 BATTERY_CONTROL = "switch.s10_x_battery_power_control"
-FEED_IN_LIMIT = "number.s10_x_feed_in_limit"
+FEED_IN_LIMIT = "number.s10_x_feed_in_limit_setpoint"
 FEED_IN_CONTROL = "switch.s10_x_feed_in_limit_control"
-ACTIVE_POWER_LIMIT = "number.s10_x_active_power_limit"
+ACTIVE_POWER_LIMIT = "number.s10_x_active_power_limit_setpoint"
 ACTIVE_POWER_CONTROL = "switch.s10_x_active_power_limit_control"
 
 
@@ -306,92 +317,138 @@ async def test_stopping_home_assistant_hands_setpoints_back(
     assert _writes_to(writes, 40192) == [[600], [1000]]
 
 
-@pytest.mark.usefixtures("init_integration")
-async def test_a_stop_during_a_rewrite_is_not_undone(
-    hass: HomeAssistant,
-    freezer: FrozenDateTimeFactory,
-    mock_unit: MockModbusUnit,
-    monkeypatch: pytest.MonkeyPatch,
-    writes: list[WriteEvent],
-) -> None:
-    """Test a rewrite in progress doesn't write a hold that was stopped meanwhile."""
-    await _set(hass, FEED_IN_LIMIT, 4000)
-    await _set(hass, BATTERY_POWER, 3000)
-    write_registers = mock_unit.write_registers
-    started, release = asyncio.Event(), asyncio.Event()
-
-    async def slow_feed_in(address: int, values: list[int]) -> None:
-        if address == register(40186):
-            started.set()
-            await release.wait()
-        await write_registers(address, values)
-
-    monkeypatch.setattr(mock_unit, "write_registers", slow_feed_in)
-    freezer.tick(REWRITE_INTERVAL)
-    async_fire_time_changed(hass)
-    await started.wait()
-    stop = hass.async_create_task(_switch(hass, BATTERY_CONTROL, False))
-    await asyncio.sleep(0)
-    release.set()
-    await stop
-    await hass.async_block_till_done(wait_background_tasks=True)
-
-    battery_writes = [
-        w.address for w in writes if w.address in (register(40197), register(40199))
-    ]
-    assert battery_writes[-1] == register(40199)
-    assert hass.states.get(BATTERY_CONTROL).state == STATE_OFF
-
-
-@pytest.mark.usefixtures("init_integration")
-async def test_a_replacement_during_a_rewrite_wins(
-    hass: HomeAssistant,
-    freezer: FrozenDateTimeFactory,
-    mock_unit: MockModbusUnit,
-    monkeypatch: pytest.MonkeyPatch,
-    writes: list[WriteEvent],
-) -> None:
-    """Test a value set during a rewrite is the one written last and held."""
-    await _set(hass, BATTERY_POWER, 3000)
-    write_registers = mock_unit.write_registers
-    started, release = asyncio.Event(), asyncio.Event()
-    calls = 0
-
-    async def slow_first(address: int, values: list[int]) -> None:
-        nonlocal calls
-        calls += 1
-        if calls == 1:
-            started.set()
-            await release.wait()
-        await write_registers(address, values)
-
-    monkeypatch.setattr(mock_unit, "write_registers", slow_first)
-    freezer.tick(REWRITE_INTERVAL)
-    async_fire_time_changed(hass)
-    await started.wait()
-    replace = hass.async_create_task(_set(hass, BATTERY_POWER, -2000))
-    await asyncio.sleep(0)
-    release.set()
-    await replace
-    await _tick(hass, freezer)
-
-    assert _writes_to(writes, 40197)[-2:] == [[0xF830, 0xFFFF]] * 2
-    assert hass.states.get(BATTERY_POWER).state == "-2000.0"
-
-
 async def test_a_setpoint_during_unload_is_refused(
+    hass: HomeAssistant,
+    init_integration: MockConfigEntry,
+    mock_unit: MockModbusUnit,
+    monkeypatch: pytest.MonkeyPatch,
+    writes: list[WriteEvent],
+) -> None:
+    """Test a value set while the entry hands its setpoints back is refused."""
+    await _set(hass, BATTERY_POWER, 3000)
+    write_register = mock_unit.write_register
+    releasing, release = asyncio.Event(), asyncio.Event()
+
+    async def slow_release(address: int, value: int) -> None:
+        if address == register(40199):
+            releasing.set()
+            await release.wait()
+        await write_register(address, value)
+
+    monkeypatch.setattr(mock_unit, "write_register", slow_release)
+    unload = hass.async_create_task(
+        hass.config_entries.async_unload(init_integration.entry_id)
+    )
+    await releasing.wait()
+    holds = init_integration.runtime_data.holds
+    setting = hass.async_create_task(holds.async_start(Setpoint.BATTERY_POWER, 2000))
+    await asyncio.sleep(0)
+    release.set()
+    await unload
+
+    with pytest.raises(HomeAssistantError) as err:
+        await setting
+    assert err.value.translation_key == "not_loaded"
+    assert _writes_to(writes, 40197) == [[3000, 0]]
+
+
+async def test_stopping_with_a_rewrite_in_flight(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
     init_integration: MockConfigEntry,
+    mock_unit: MockModbusUnit,
+    monkeypatch: pytest.MonkeyPatch,
     writes: list[WriteEvent],
 ) -> None:
-    """Test no hold starts once the entry has handed its setpoints back."""
-    holds = init_integration.runtime_data.holds
-    await holds.async_stop_all()
+    """Test Home Assistant stopping mid-rewrite still hands the battery back."""
+    await _set(hass, BATTERY_POWER, 3000)
+    write_registers = mock_unit.write_registers
+    started = asyncio.Event()
 
-    with pytest.raises(HomeAssistantError) as err:
-        await holds.async_start("battery_power", 3000)
-    await _tick(hass, freezer)
+    async def hang(address: int, values: list[int]) -> None:
+        started.set()
+        await asyncio.sleep(60)
+        await write_registers(address, values)
 
-    assert err.value.translation_key == "not_loaded"
+    monkeypatch.setattr(mock_unit, "write_registers", hang)
+    freezer.tick(REWRITE_INTERVAL)
+    async_fire_time_changed(hass)
+    await started.wait()
+
+    await hass.async_stop()
+
+    assert _writes_to(writes, 40199) == [[1]]
+
+
+async def test_holds_ignore_failed_settings_polls(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    init_integration: MockConfigEntry,
+    mock_unit: MockModbusUnit,
+    writes: list[WriteEvent],
+) -> None:
+    """Test the setpoint entities stay usable while the settings poll fails."""
+    await _set(hass, BATTERY_POWER, 3000)
+    mock_unit.fail_read(register(40199), IllegalDataAddressError())
+    freezer.tick(timedelta(seconds=SETTINGS_SCAN_INTERVAL))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert "battery_control" in init_integration.runtime_data.settings.data.failed
+
+    assert hass.states.get(BATTERY_CONTROL).state == STATE_ON
+    await _switch(hass, BATTERY_CONTROL, False)
+
+    assert _writes_to(writes, 40199) == [[1]]
+
+
+@pytest.mark.usefixtures("init_integration")
+async def test_a_failed_setpoint_keeps_the_old_value(
+    hass: HomeAssistant, mock_unit: MockModbusUnit
+) -> None:
+    """Test a value the power station refuses doesn't replace the held one."""
+    await _set(hass, BATTERY_POWER, 1000)
+    mock_unit.fail_write(register(40197), ModbusTimeoutError())
+
+    with pytest.raises(HomeAssistantError):
+        await _set(hass, BATTERY_POWER, 2000)
+
+    assert hass.states.get(BATTERY_POWER).state == "1000.0"
+    assert hass.states.get(BATTERY_CONTROL).state == STATE_ON
+
+
+async def test_the_number_is_restored_without_holding(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_get_unit: MagicMock,
+    writes: list[WriteEvent],
+) -> None:
+    """Test a restored value can be held again but isn't written on its own."""
+    mock_restore_cache_with_extra_data(
+        hass,
+        [
+            (
+                State(BATTERY_POWER, "2500.0"),
+                {
+                    "native_max_value": 50000,
+                    "native_min_value": -50000,
+                    "native_step": 100,
+                    "native_unit_of_measurement": "W",
+                    "native_value": 2500,
+                },
+            )
+        ],
+    )
+    mock_config_entry.add_to_hass(hass)
+    with patch(
+        "homeassistant.components.e3dc.PLATFORMS", [Platform.NUMBER, Platform.SWITCH]
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert hass.states.get(BATTERY_POWER).state == "2500"
+    assert hass.states.get(BATTERY_CONTROL).state == STATE_OFF
     assert _writes_to(writes, 40197) == []
+
+    await _switch(hass, BATTERY_CONTROL, True)
+
+    assert _writes_to(writes, 40197) == [[2500, 0]]

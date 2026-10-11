@@ -102,10 +102,12 @@ Each wallbox gets its own device with **Charging**, **Type 2 plug**, **Type 2 pl
 On firmware that supports remote control, the power station device has three setpoints. Each is a number and a switch:
 
 - **Battery power setpoint** and **Battery power control**: charge (positive) or discharge (negative) the battery at a fixed power. PV power charges first, and the grid makes up the rest.
-- **Feed-in limit** and **Feed-in limit control**: cap the power fed into the grid.
-- **Active power limit** and **Active power limit control**: cap the inverter's output, as a percentage of its rated power. The cap ignores the house's consumption.
+- **Feed-in limit setpoint** and **Feed-in limit control**: cap the power fed into the grid.
+- **Active power limit setpoint** and **Active power limit control**: cap the inverter's output, as a percentage of its rated power. The cap ignores the house's consumption.
 
-Setting a number writes the value to the power station and turns its switch on. The power station drops a setpoint 30 seconds after the last write, so while the switch is on, the integration writes the value again every 10 seconds. Turning the switch off hands control back: remote battery control ends at once, the active power limit goes back to 100 %, and the feed-in limit lapses within 30 seconds. Turning the switch on again holds the last value set.
+Setting a number writes the value to the power station and turns its switch on. The power station drops a setpoint 30 seconds after the last write, so while the switch is on, the integration writes the value again every 10 seconds. Turning the switch off hands control back: remote battery control ends at once, the integration writes 100 % as the active power limit, and the feed-in limit lapses within 30 seconds. Writing 100 % is itself a setpoint, so once the active power failsafe timeout runs out, the active power failsafe value applies. Check on your power station that this is what you want. Turning the switch on again holds the last value set, which is kept across restarts.
+
+The numbers and switches stay usable while a poll fails, because holding a setpoint doesn't depend on the last poll.
 
 A switch shows unknown while writing to the power station fails, because the power station may have dropped the setpoint. If a setpoint spans two registers and can only be half-written, setting it fails and the error says what the integration tried to put back.
 
@@ -187,7 +189,7 @@ If one block of registers fails to read, only the entities from that block becom
 
 - The power station has no energy counters over Modbus. To use it on the Energy dashboard, create [Integral](/integrations/integration/) helpers from the power sensors.
 - The manual names the wallbox control bits, but which ones work depends on the wallbox model.
-- A setpoint is held while Home Assistant runs. When Home Assistant stops, the integration hands every setpoint back. If that fails, the battery power and the feed-in limit lapse within 30 seconds. The active power limit lasts for the active power failsafe timeout, after which the active power failsafe value applies. With a failsafe timeout of 0, it lasts until it is written again. After a restart, set the setpoint again.
+- A setpoint is held while Home Assistant runs. When Home Assistant stops, or when you reload or disable the integration, it hands every setpoint back, waiting at most 5 seconds. If that fails, the switch shows off anyway. The battery power and the feed-in limit lapse within 30 seconds. The active power limit lasts for the active power failsafe timeout, after which the active power failsafe value applies. With a failsafe timeout of 0, it lasts until it is written again. After a restart, set the setpoint again.
 
 ## Troubleshooting
 

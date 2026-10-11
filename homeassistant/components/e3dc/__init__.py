@@ -19,7 +19,7 @@ from .config_flow import create_modbus_params
 from .const import DOMAIN, SCAN_INTERVAL, SETTINGS_SCAN_INTERVAL, UNIT_ID
 from .coordinator import E3dcConfigEntry, E3dcDataUpdateCoordinator, E3dcRuntimeData
 from .entity import part_identifier, present_meters, present_wallboxes
-from .holds import SetpointHolds
+from .holds import E3dcHolds
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -81,17 +81,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool
         config_entry_id=entry.entry_id, **readings.device_info
     )
 
-    @callback
-    def _notify_holds() -> None:
-        readings.async_update_listeners()
-        settings.async_update_listeners()
-
-    holds = SetpointHolds(hass, entry, device, _notify_holds)
+    holds = E3dcHolds(hass, entry, device)
     entry.runtime_data = E3dcRuntimeData(readings, settings, station.id, holds)
 
     # Home Assistant doesn't unload entries when it stops
     async def _async_release_on_stop(event: Event) -> None:
-        await holds.async_stop_all()
+        await holds.async_close()
 
     entry.async_on_unload(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_release_on_stop)
@@ -185,5 +180,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> boo
     """Unload a config entry and hand every held setpoint back."""
     if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         return False
-    await entry.runtime_data.holds.async_stop_all()
+    await entry.runtime_data.holds.async_close()
     return True

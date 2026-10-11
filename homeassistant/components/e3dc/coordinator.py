@@ -17,7 +17,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DEFAULT_NAME, DOMAIN
-from .holds import SetpointHolds
+from .holds import E3dcHolds
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -103,7 +103,7 @@ class E3dcRuntimeData:
     readings: E3dcDataUpdateCoordinator
     settings: E3dcDataUpdateCoordinator
     station_device_id: str
-    holds: SetpointHolds
+    holds: E3dcHolds
     # The parts each platform has added entities for, keyed by (kind, platform).
     wired_parts: dict[tuple[str, str], set[int]] = field(default_factory=dict)
 

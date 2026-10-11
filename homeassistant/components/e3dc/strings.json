@@ -84,13 +84,13 @@
     },
     "number": {
       "active_power_limit_setpoint": {
-        "name": "Active power limit"
+        "name": "Active power limit setpoint"
       },
       "battery_power_setpoint": {
         "name": "Battery power setpoint"
       },
       "feed_in_limit_setpoint": {
-        "name": "Feed-in limit"
+        "name": "Feed-in limit setpoint"
       }
     },
     "sensor": {
@@ -300,7 +300,7 @@
       "message": "The device is not an E3/DC power station in E3/DC protocol mode."
     },
     "not_loaded": {
-      "message": "The power station is unloading and takes no new setpoints."
+      "message": "Home Assistant is stopping or the entry is unloading, so no new setpoint is taken."
     },
     "serial_mismatch": {
       "message": "The device at this address has serial number {found}, not {expected}. Reconfigure the entry if the power station moved."

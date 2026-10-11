@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from e3dc_ess_modbus import Setpoint
 from e3dc_ess_modbus.model import register
 from modbus_connection import ModbusError
 
@@ -9,7 +10,6 @@ from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.core import HomeAssistant
 
 from .coordinator import E3dcConfigEntry
-from .holds import SETPOINTS
 
 TO_REDACT = {"serial_number"}
 
@@ -60,13 +60,13 @@ async def async_get_config_entry_diagnostics(
                 )
             },
             "held_setpoints": {
-                key: {
+                str(setpoint): {
                     "value": hold.value,
                     "failing": hold.failing,
                     "releasing": hold.releasing,
                 }
-                for key in SETPOINTS
-                if (hold := runtime_data.holds.get(key)) is not None
+                for setpoint in Setpoint
+                if (hold := runtime_data.holds.get(setpoint)) is not None
             },
             "read_error": read_error,
             "raw": raw,

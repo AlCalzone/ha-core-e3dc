@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any, override
 
-from e3dc_ess_modbus import E3dcError, E3dcPowerStation
+from e3dc_ess_modbus import E3dcError, E3dcPowerStation, Setpoint
 from modbus_connection import ModbusError
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
@@ -21,7 +21,6 @@ from .entity import (
     async_add_part_entities,
     present_wallboxes,
 )
-from .holds import ACTIVE_POWER_LIMIT, BATTERY_POWER, FEED_IN_LIMIT
 
 PARALLEL_UPDATES = 1
 
@@ -75,7 +74,7 @@ def wallbox_switches(number: int) -> list[E3dcSwitchEntityDescription]:
 class E3dcSetpointSwitchDescription(SwitchEntityDescription, E3dcEntityDescription):
     """Describe a switch that holds a setpoint or hands it back."""
 
-    hold_key: str
+    setpoint: Setpoint
 
 
 SETPOINT_SWITCHES: tuple[E3dcSetpointSwitchDescription, ...] = (
@@ -83,19 +82,19 @@ SETPOINT_SWITCHES: tuple[E3dcSetpointSwitchDescription, ...] = (
         key="battery_power_control",
         translation_key="battery_power_control",
         component="battery_control",
-        hold_key=BATTERY_POWER,
+        setpoint=Setpoint.BATTERY_POWER,
     ),
     E3dcSetpointSwitchDescription(
         key="feed_in_limit_control",
         translation_key="feed_in_limit_control",
         component="grid_control",
-        hold_key=FEED_IN_LIMIT,
+        setpoint=Setpoint.FEED_IN_LIMIT,
     ),
     E3dcSetpointSwitchDescription(
         key="active_power_limit_control",
         translation_key="active_power_limit_control",
         component="grid_control",
-        hold_key=ACTIVE_POWER_LIMIT,
+        setpoint=Setpoint.ACTIVE_POWER_LIMIT,
     ),
 )
 
@@ -174,17 +173,28 @@ class E3dcSetpointSwitch(E3dcEntity, SwitchEntity):
         super().__init__(runtime_data, entity_description)
         self._holds = runtime_data.holds
 
+    @override
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(self._holds.async_add_listener(self.async_write_ha_state))
+
+    @property
+    @override
+    def available(self) -> bool:
+        """Always, because holding a setpoint doesn't depend on the last poll."""
+        return True
+
     @property
     @override
     def is_on(self) -> bool | None:
-        if (hold := self._holds.get(self.entity_description.hold_key)) is None:
+        if (hold := self._holds.get(self.entity_description.setpoint)) is None:
             return False
         return True if hold.confirmed else None
 
     @override
     async def async_turn_on(self, **kwargs: Any) -> None:
-        await self._holds.async_resume(self.entity_description.hold_key)
+        await self._holds.async_resume(self.entity_description.setpoint)
 
     @override
     async def async_turn_off(self, **kwargs: Any) -> None:
-        await self._holds.async_stop(self.entity_description.hold_key)
+        await self._holds.async_stop(self.entity_description.setpoint)
