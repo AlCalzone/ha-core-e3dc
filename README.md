@@ -46,6 +46,6 @@ CI does the same against core's `dev` branch on every push and once a week.
 ## Before submitting
 
 - Publish `e3dc-ess-modbus` 0.1.0 to PyPI. The manifest pins it.
-- Add the E3/DC brand to [home-assistant/brands](https://github.com/home-assistant/brands). Until then hassfest fails the `brands` rule of the Bronze tier, which every new integration has to reach.
+- Add the E3/DC brand to [home-assistant/brands](https://github.com/home-assistant/brands). Until then hassfest fails the `brands` rule of the Bronze tier, which every new integration has to reach. The brands repository already has `custom_integrations/e3dc`, added for [e3dc-homeassistant](https://github.com/JohannLegler/e3dc-homeassistant) in home-assistant/brands#9209. That folder has to be resolved with its owner before core can use the domain.
 - Open the documentation pull request on home-assistant.io with `docs/e3dc.markdown`.
 - Test against a real power station. The register map comes from the manufacturer's manual, version 2.80, and has only been tested against the mock.
