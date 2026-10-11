@@ -452,3 +452,27 @@ async def test_the_number_is_restored_without_holding(
     await _switch(hass, BATTERY_CONTROL, True)
 
     assert _writes_to(writes, 40197) == [[2500, 0]]
+
+
+async def test_a_failed_setup_stops_the_rewrite_timer(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    mock_config_entry: MockConfigEntry,
+    mock_get_unit: MagicMock,
+) -> None:
+    """Test the rewrite timer doesn't outlive a setup that failed late."""
+    mock_config_entry.add_to_hass(hass)
+    with (
+        patch.object(
+            hass.config_entries,
+            "async_forward_entry_setups",
+            side_effect=RuntimeError("platform bug"),
+        ),
+        patch(
+            "homeassistant.components.e3dc.holds.E3dcHolds._async_on_interval"
+        ) as on_interval,
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await _tick(hass, freezer)
+
+    on_interval.assert_not_called()

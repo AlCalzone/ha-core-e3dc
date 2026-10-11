@@ -105,10 +105,12 @@ class E3dcSetpointNumber(E3dcEntity, RestoreNumber):
         await super().async_added_to_hass()
         self.async_on_remove(self._holds.async_add_listener(self.async_write_ha_state))
         setpoint = self.entity_description.setpoint
+        last = await self.async_get_last_number_data()
+        # A value set while the restore was loading wins over the restored one
         if (
-            self._holds.requested(setpoint) is None
-            and (last := await self.async_get_last_number_data()) is not None
+            last is not None
             and last.native_value is not None
+            and self._holds.requested(setpoint) is None
         ):
             self._holds.remember(setpoint, last.native_value)
 

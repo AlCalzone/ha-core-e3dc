@@ -46,6 +46,7 @@ class E3dcHolds:
         self._unsub_interval: CALLBACK_TYPE | None = async_track_time_interval(
             hass, self._async_on_interval, REWRITE_INTERVAL
         )
+        entry.async_on_unload(self._async_stop_timer)
 
     def get(self, setpoint: Setpoint) -> Hold | None:
         """The hold of ``setpoint``, if one is active or still being handed back."""
@@ -78,14 +79,22 @@ class E3dcHolds:
         await self._async_translate(setpoint, self._holds.async_stop(setpoint))
 
     async def async_close(self) -> None:
-        """Stop rewriting and hand every setpoint back, for unload or shutdown."""
+        """Stop rewriting and hand every setpoint back, for unload or shutdown.
+
+        The library bounds the wait for a running rewrite and the hand-backs.
+        """
+        self._async_stop_timer()
+        await self._holds.async_close()
+        if self._tick is not None:
+            # A rewrite still stuck on the link after the bound gives up too
+            self._tick.cancel()
+            await asyncio.gather(self._tick, return_exceptions=True)
+
+    @callback
+    def _async_stop_timer(self) -> None:
         if self._unsub_interval is not None:
             self._unsub_interval()
             self._unsub_interval = None
-        if self._tick is not None:
-            # Home Assistant cancels background tasks before it stops
-            await asyncio.gather(self._tick, return_exceptions=True)
-        await self._holds.async_close()
 
     async def _async_translate(self, setpoint: Setpoint, call: Awaitable[None]) -> None:
         """Run a hold call, turning library errors into Home Assistant errors."""

@@ -189,7 +189,7 @@ If one block of registers fails to read, only the entities from that block becom
 
 - The power station has no energy counters over Modbus. To use it on the Energy dashboard, create [Integral](/integrations/integration/) helpers from the power sensors.
 - The manual names the wallbox control bits, but which ones work depends on the wallbox model.
-- A setpoint is held while Home Assistant runs. When Home Assistant stops, or when you reload or disable the integration, it hands every setpoint back, waiting at most 5 seconds. If that fails, the switch shows off anyway. The battery power and the feed-in limit lapse within 30 seconds. The active power limit lasts for the active power failsafe timeout, after which the active power failsafe value applies. With a failsafe timeout of 0, it lasts until it is written again. After a restart, set the setpoint again.
+- A setpoint is held while Home Assistant runs. When Home Assistant stops, or when you reload or disable the integration, it hands every setpoint back, giving up after about 5 seconds on an unresponsive power station. If that fails, the switch shows off anyway. The battery power and the feed-in limit lapse within 30 seconds. The active power limit lasts for the active power failsafe timeout, after which the active power failsafe value applies. With a failsafe timeout of 0, it lasts until it is written again. After a restart, turn the setpoint's switch on again.
 
 ## Troubleshooting
 
