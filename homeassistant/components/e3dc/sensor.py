@@ -42,7 +42,9 @@ from .entity import (
     E3dcEntityDescription,
     async_add_part_entities,
     present_inverters,
+    present_meters,
 )
+from .holds import ACTIVE_POWER_LIMIT, BATTERY_POWER, FEED_IN_LIMIT
 
 PARALLEL_UPDATES = 0
 
@@ -250,18 +252,6 @@ STATION_SENSORS: tuple[E3dcSensorDescription, ...] = (
             meters.sg_ready_status
             if (meters := device.wide_power_meters) is not None
             else None
-        ),
-    ),
-    E3dcSensorDescription(
-        key="feed_in_limit",
-        translation_key="feed_in_limit",
-        component="grid_control",
-        device_class=SensorDeviceClass.POWER,
-        native_unit_of_measurement=UnitOfPower.WATT,
-        entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
-        value_fn=lambda device: (
-            grid.feed_in_limit if (grid := device.grid_control) is not None else None
         ),
     ),
     E3dcSensorDescription(
@@ -479,6 +469,40 @@ def _inverter_sensors(number: int) -> list[E3dcSensorDescription]:
     ]
 
 
+@dataclass(frozen=True, kw_only=True)
+class E3dcSetpointSensorDescription(SensorEntityDescription, E3dcEntityDescription):
+    """Describe a sensor showing a setpoint the integration holds."""
+
+    hold_key: str
+
+
+SETPOINT_SENSORS: tuple[E3dcSetpointSensorDescription, ...] = (
+    E3dcSetpointSensorDescription(
+        key="battery_power_setpoint",
+        translation_key="battery_power_setpoint",
+        component="battery_control",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        hold_key=BATTERY_POWER,
+    ),
+    E3dcSetpointSensorDescription(
+        key="feed_in_limit_setpoint",
+        translation_key="feed_in_limit_setpoint",
+        component="grid_control",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        hold_key=FEED_IN_LIMIT,
+    ),
+    E3dcSetpointSensorDescription(
+        key="active_power_limit_setpoint",
+        translation_key="active_power_limit_setpoint",
+        component="grid_control",
+        native_unit_of_measurement=PERCENTAGE,
+        hold_key=ACTIVE_POWER_LIMIT,
+    ),
+)
+
+
 def _sum(values: tuple[int | None, ...]) -> int | None:
     """The sum of the phase values, or ``None`` if any is unknown."""
     if any(value is None for value in values):
@@ -488,13 +512,8 @@ def _sum(values: tuple[int | None, ...]) -> int | None:
 
 def _descriptions(runtime_data: E3dcRuntimeData) -> list[E3dcSensorDescription]:
     """Every sensor this power station serves."""
-    device = runtime_data.device
     served = runtime_data.served_components
-    descriptions = [d for d in STATION_SENSORS if d.component in served]
-    for number, meter in device.power_meter_readings.items():
-        if meter.is_installed:
-            descriptions.extend(_power_meter_sensors(number))
-    return descriptions
+    return [d for d in STATION_SENSORS if d.component in served]
 
 
 async def async_setup_entry(
@@ -507,6 +526,23 @@ async def async_setup_entry(
     async_add_entities(
         E3dcSensor(runtime_data, description)
         for description in _descriptions(runtime_data)
+    )
+    served = runtime_data.served_components
+    async_add_entities(
+        E3dcSetpointSensor(runtime_data, description)
+        for description in SETPOINT_SENSORS
+        if description.component in served
+    )
+    async_add_part_entities(
+        entry,
+        Platform.SENSOR,
+        "power_meter",
+        present_meters,
+        async_add_entities,
+        lambda number: (
+            E3dcSensor(runtime_data, description)
+            for description in _power_meter_sensors(number)
+        ),
     )
     async_add_part_entities(
         entry,
@@ -533,3 +569,24 @@ class E3dcSensor(E3dcEntity, SensorEntity):
         if isinstance(value, IntEnum):
             return value.name.lower()
         return value
+
+
+class E3dcSetpointSensor(E3dcEntity, SensorEntity):
+    """The setpoint the integration holds, or unknown while it holds none."""
+
+    entity_description: E3dcSetpointSensorDescription
+
+    def __init__(
+        self,
+        runtime_data: E3dcRuntimeData,
+        entity_description: E3dcSetpointSensorDescription,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(runtime_data, entity_description)
+        self._holds = runtime_data.holds
+
+    @property
+    @override
+    def native_value(self) -> float | None:
+        hold = self._holds.get(self.entity_description.hold_key)
+        return None if hold is None else hold.value

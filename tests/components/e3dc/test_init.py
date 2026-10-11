@@ -1,7 +1,7 @@
 """Tests for the E3/DC integration setup."""
 
 from datetime import timedelta
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from e3dc_ess_modbus.model import register
 from freezegun.api import FrozenDateTimeFactory
@@ -18,10 +18,11 @@ from homeassistant.components.e3dc.const import DOMAIN, SCAN_INTERVAL, UNIT_ID
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import STATE_UNAVAILABLE, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.setup import async_setup_component
 
-from . import MOCK_SERIAL, seed
+from . import MOCK_SERIAL, seed, seed_identity
 
 from tests.common import MockConfigEntry, async_fire_time_changed
 from tests.typing import WebSocketGenerator
@@ -267,3 +268,147 @@ async def test_inverter_added_when_it_connects(
     await hass.async_block_till_done()
 
     assert hass.states.get("sensor.inverter_1_active_power_l1").state == "1200"
+
+
+async def test_setup_fails_when_the_link_is_held_with_other_settings(
+    hass: HomeAssistant, mock_config_entry: MockConfigEntry
+) -> None:
+    """Test a shared link held with other settings fails setup for good."""
+    mock_config_entry.add_to_hass(hass)
+    with patch(
+        "homeassistant.components.e3dc.async_get_unit",
+        side_effect=HomeAssistantError("in use with baudrate 9600"),
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+
+    assert mock_config_entry.state is ConfigEntryState.SETUP_ERROR
+    assert mock_config_entry.error_reason_translation_key == "link_settings_in_use"
+
+
+async def test_setup_fails_for_another_power_station(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_get_unit: MagicMock,
+    mock_unit: MockModbusUnit,
+) -> None:
+    """Test setup refuses a power station with another serial number."""
+    seed_identity(mock_unit, serial="S10-99999999999")
+    mock_config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+
+    assert mock_config_entry.state is ConfigEntryState.SETUP_ERROR
+    assert mock_config_entry.error_reason_translation_key == "serial_mismatch"
+
+
+async def test_setup_removes_devices_of_parts_that_are_gone(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+    mock_config_entry: MockConfigEntry,
+    mock_get_unit: MagicMock,
+) -> None:
+    """Test setup drops the devices of parts the power station no longer reports."""
+    mock_config_entry.add_to_hass(hass)
+    for part in ("wallbox_3", "power_meter_5", "power_meter_0", "inverter_0"):
+        device_registry.async_get_or_create(
+            config_entry_id=mock_config_entry.entry_id,
+            identifiers={(DOMAIN, f"{MOCK_SERIAL}_{part}")},
+        )
+
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+
+    def present(part: str) -> bool:
+        return (
+            device_registry.async_get_device_by_identifier(
+                (DOMAIN, f"{MOCK_SERIAL}_{part}"), mock_config_entry.entry_id
+            )
+            is not None
+        )
+
+    assert not present("wallbox_3")
+    assert not present("power_meter_5")
+    assert present("power_meter_0")
+    assert present("inverter_0")
+
+
+async def test_setup_keeps_devices_when_a_block_failed(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+    mock_config_entry: MockConfigEntry,
+    mock_get_unit: MagicMock,
+    mock_unit: MockModbusUnit,
+) -> None:
+    """Test a meter block that fails on the first poll removes no meter."""
+    mock_unit.fail_read(register(40105), IllegalDataAddressError())
+    mock_config_entry.add_to_hass(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=mock_config_entry.entry_id,
+        identifiers={(DOMAIN, f"{MOCK_SERIAL}_power_meter_0")},
+    )
+
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+
+    assert device_registry.async_get_device_by_identifier(
+        (DOMAIN, f"{MOCK_SERIAL}_power_meter_0"), mock_config_entry.entry_id
+    )
+
+
+@pytest.mark.parametrize(
+    ("part", "removable"),
+    [
+        pytest.param("power_meter_0", False, id="installed_meter"),
+        pytest.param("power_meter_5", True, id="gone_meter"),
+        pytest.param("inverter_0", False, id="answering_inverter"),
+    ],
+)
+async def test_remove_a_part(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    device_registry: dr.DeviceRegistry,
+    init_integration: MockConfigEntry,
+    part: str,
+    removable: bool,
+) -> None:
+    """Test only a part the power station no longer reports can be removed."""
+    device_registry.async_get_or_create(
+        config_entry_id=init_integration.entry_id,
+        identifiers={(DOMAIN, f"{MOCK_SERIAL}_{part}")},
+    )
+
+    assert (
+        await _remove(hass, hass_ws_client, device_registry, init_integration, part)
+        is removable
+    )
+
+
+@pytest.mark.parametrize("platforms", [[Platform.SENSOR]])
+async def test_meter_added_when_it_appears(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    init_integration: MockConfigEntry,
+    mock_unit: MockModbusUnit,
+) -> None:
+    """Test a power meter configured later gets its entities."""
+    assert hass.states.get("sensor.power_meter_2_power") is None
+
+    seed(mock_unit, {40113: 2, 40114: 300})
+    freezer.tick(_SCAN)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get("sensor.power_meter_2_power") is not None
+
+
+@pytest.mark.parametrize("platforms", [[Platform.SWITCH]])
+async def test_unconfigured_wallbox_goes_unavailable(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    init_integration: MockConfigEntry,
+    mock_unit: MockModbusUnit,
+) -> None:
+    """Test a wallbox the power station stops reporting goes unavailable."""
+    seed(mock_unit, {40088: 0})
+    freezer.tick(_SCAN)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get("switch.wallbox_0_charging").state == STATE_UNAVAILABLE

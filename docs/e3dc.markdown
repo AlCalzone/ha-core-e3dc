@@ -81,7 +81,8 @@ The power station device has these sensors:
 - **Emergency power**: whether emergency power is active, inactive, not available or not supported. On the S10 E and S10 E PRO, **Motor switch off** means the emergency power motor switch is not in its on position.
 - **DC string 1 power** and **DC string 2 power**, plus their voltage and current, which are disabled by default.
 - **Stored energy**, **Battery capacity**, **Maximum charge power** and **Maximum discharge power**, on firmware 2026_04 and later.
-- **Inverter mode**, **Feed-in limit**, the failsafe timeouts and the **SG Ready status**, as diagnostic sensors.
+- **Battery power setpoint**, **Feed-in limit setpoint** and **Active power limit setpoint**: the value the integration holds, or unknown while it holds none.
+- **Inverter mode**, the failsafe timeouts and the **SG Ready status**, as diagnostic sensors.
 
 Each configured power meter gets its own device with its type, its total power, and the power per phase, which is disabled by default. The power station's own inverter and each additional solar inverter also get a device with their power, voltage, current and frequency per phase. Most inverter sensors are disabled by default.
 
@@ -93,6 +94,7 @@ Each configured power meter gets its own device with its type, its total power, 
 - **Feed-in limited**: output is throttled because the maximum feed-in was reached.
 - **Charging lockout period** and **Discharging lockout period**: a lockout time from **Smart Charge** is active. Disabled by default.
 - **Power output ready**: the inverter, DC-DC converter and battery are ready to deliver power.
+- **Remote battery control**: the integration holds a battery power setpoint.
 
 Each wallbox gets its own device with **Charging**, **Type 2 plug**, **Type 2 plug locked** and **Type F plug** binary sensors.
 
@@ -104,26 +106,27 @@ Each wallbox has these switches:
 - **Solar charging**: charge from solar power only. Turn off for hybrid charging, which also draws from the grid and the battery.
 - **Single-phase charging**: charge on one phase instead of three.
 
-Wallboxes appear when the power station reports them, including ones you add later.
+Wallboxes, power meters and additional inverters appear when the power station reports them, including ones you add later. When the integration loads, it removes the devices of wallboxes and meters that are no longer configured, and of inverter slots that no longer answer. You can also delete such a device yourself.
 
 ## Actions
 
 All actions require an administrator and are available only on firmware that serves the registers they write.
 
+The power station drops a remote setpoint 30 seconds after the last write. The integration writes a setpoint again every 10 seconds until you stop it, its duration runs out, or the integration unloads. The **Remote battery control** binary sensor and the setpoint sensors show what the integration is holding.
+
 ### Action: Set battery power
 
-The `e3dc.set_battery_power` action charges or discharges the battery at a fixed power. Positive values charge, negative values discharge. PV power charges the battery first, and the grid makes up the rest.
-
-The power station returns to its own control 30 seconds after the last call, so call the action again at least every 30 seconds to hold the setpoint.
+The `e3dc.set_battery_power` action charges or discharges the battery at a fixed power, and holds it. Positive values charge, negative values discharge. PV power charges the battery first, and the grid makes up the rest.
 
 | Data attribute | Optional | Description |
 | --- | --- | --- |
 | `config_entry_id` | no | The power station to control. |
 | `power` | no | The battery power in watts. |
+| `duration` | yes | How long to hold the setpoint. Without it, the setpoint holds until you stop it. |
 
 ### Action: Stop battery control
 
-The `e3dc.stop_battery_control` action ends remote battery control at once, without waiting for the 30-second timeout.
+The `e3dc.stop_battery_control` action stops holding the battery power and hands the battery back to the power station at once.
 
 | Data attribute | Optional | Description |
 | --- | --- | --- |
@@ -131,47 +134,70 @@ The `e3dc.stop_battery_control` action ends remote battery control at once, with
 
 ### Action: Set feed-in limit
 
-The `e3dc.set_feed_in_limit` action caps the power fed into the grid. Like the battery power, the limit expires 30 seconds after the last call.
+The `e3dc.set_feed_in_limit` action caps the power fed into the grid, and holds the limit.
 
 | Data attribute | Optional | Description |
 | --- | --- | --- |
 | `config_entry_id` | no | The power station to control. |
 | `power` | no | The most power to feed into the grid, in watts. |
+| `duration` | yes | How long to hold the limit. Without it, the limit holds until you clear it. |
 
 ### Action: Set active power limit
 
-The `e3dc.set_active_power_limit` action caps the inverter's active power as a percentage of its rated power. The cap ignores the house's consumption. It expires after the active power failsafe timeout, 30 seconds by default.
+The `e3dc.set_active_power_limit` action caps the inverter's active power as a percentage of its rated power, and holds the cap. The cap ignores the house's consumption.
 
 | Data attribute | Optional | Description |
 | --- | --- | --- |
 | `config_entry_id` | no | The power station to control. |
 | `limit` | no | The output ceiling, in percent of rated power. |
+| `duration` | yes | How long to hold the cap. Without it, the cap holds until you clear it. |
+
+### Action: Clear grid limits
+
+The `e3dc.clear_grid_limits` action stops holding the feed-in limit and the active power limit. The active power limit goes back to 100 %, and the feed-in limit lapses within 30 seconds.
+
+| Data attribute | Optional | Description |
+| --- | --- | --- |
+| `config_entry_id` | no | The power station to control. |
+
+If a two-register setpoint can only be half-written, the action fails and says what it put back: remote battery control ends, or the previous feed-in limit is restored.
 
 ## Examples
 
 ### Charge the battery from the grid while power is cheap
 
-This automation holds a 3 kW charge every 20 seconds while a price sensor is below 15 cents, and hands control back when it rises.
+This automation charges at 3 kW while a price sensor is below 15 cents, and hands the battery back when the price rises.
 
 {% raw %}
 
 ```yaml
 alias: "Charge the battery while power is cheap"
 triggers:
-  - trigger: time_pattern
-    seconds: "/20"
-conditions:
-  - condition: numeric_state
+  - trigger: numeric_state
     entity_id: sensor.electricity_price
     below: 0.15
-  - condition: numeric_state
-    entity_id: sensor.s10_x_battery
-    below: 95
+    id: cheap
+  - trigger: numeric_state
+    entity_id: sensor.electricity_price
+    above: 0.15
+    id: expensive
 actions:
-  - action: e3dc.set_battery_power
-    data:
-      config_entry_id: YOUR_CONFIG_ENTRY_ID
-      power: 3000
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: cheap
+        sequence:
+          - action: e3dc.set_battery_power
+            data:
+              config_entry_id: YOUR_CONFIG_ENTRY_ID
+              power: 3000
+      - conditions:
+          - condition: trigger
+            id: expensive
+        sequence:
+          - action: e3dc.stop_battery_control
+            data:
+              config_entry_id: YOUR_CONFIG_ENTRY_ID
 ```
 
 {% endraw %}
@@ -203,7 +229,7 @@ If one block of registers fails to read, only the entities from that block becom
 
 - The power station has no energy counters over Modbus. To use it on the Energy dashboard, create [Integral](/integrations/integration/) helpers from the power sensors.
 - The manual names the wallbox control bits, but which ones work depends on the wallbox model.
-- Remote control setpoints expire after 30 seconds, so automations have to repeat them.
+- A setpoint is held while Home Assistant runs. After a restart, the power station returns to its own control within 30 seconds, and the automation that set it has to set it again.
 
 ## Troubleshooting
 

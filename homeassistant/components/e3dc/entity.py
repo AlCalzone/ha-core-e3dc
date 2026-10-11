@@ -70,12 +70,28 @@ class E3dcEntity(CoordinatorEntity[E3dcDataUpdateCoordinator]):
         """Whether this entity's component answered the most recent poll."""
         if not super().available:
             return False
-        return self.entity_description.component not in self.coordinator.data.failed
+        if self.entity_description.component in self.coordinator.data.failed:
+            return False
+        part = self.entity_description.part
+        return (
+            part is None
+            or part[0] != "wallbox"
+            or part[1] in present_wallboxes(self.coordinator.device)
+        )
 
 
 def present_wallboxes(device: E3dcPowerStation) -> list[int]:
     """The wallbox slots the power station reports as configured."""
     return list(device.wallboxes.configured)
+
+
+def present_meters(device: E3dcPowerStation) -> list[int]:
+    """The power meter slots with a meter configured."""
+    return [
+        number
+        for number, meter in device.power_meter_readings.items()
+        if meter.is_installed
+    ]
 
 
 def present_inverters(device: E3dcPowerStation) -> list[int]:

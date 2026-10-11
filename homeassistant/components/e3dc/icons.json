@@ -10,6 +10,9 @@
       "feed_in_limited": {
         "default": "mdi:transmission-tower-export"
       },
+      "remote_battery_control": {
+        "default": "mdi:home-battery"
+      },
       "weather_based_charging": {
         "default": "mdi:weather-partly-cloudy"
       }
@@ -59,6 +62,9 @@
     }
   },
   "services": {
+    "clear_grid_limits": {
+      "service": "mdi:transmission-tower-off"
+    },
     "set_active_power_limit": {
       "service": "mdi:speedometer-slow"
     },

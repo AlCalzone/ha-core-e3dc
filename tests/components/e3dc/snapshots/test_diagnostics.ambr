@@ -1,7 +1,23 @@
 # serializer version: 1
 # name: test_diagnostics
   dict({
+    'coordinators': dict({
+      'readings': dict({
+        'failed': list([
+        ]),
+        'last_exception': None,
+        'last_update_success': True,
+      }),
+      'settings': dict({
+        'failed': list([
+        ]),
+        'last_exception': None,
+        'last_update_success': True,
+      }),
+    }),
     'firmware_release': 'S10_2026_04',
+    'held_setpoints': dict({
+    }),
     'inverters': list([
       0,
       1,

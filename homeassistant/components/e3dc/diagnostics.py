@@ -43,6 +43,26 @@ async def async_get_config_entry_diagnostics(
             "settings_components": device.settings_components,
             "inverters": sorted(device.inverters or ()),
             "wallboxes": list(device.wallboxes.configured),
+            "coordinators": {
+                name: {
+                    "last_update_success": coordinator.last_update_success,
+                    "last_exception": repr(coordinator.last_exception)
+                    if coordinator.last_exception is not None
+                    else None,
+                    "failed": sorted(coordinator.data.failed)
+                    if coordinator.data is not None
+                    else None,
+                }
+                for name, coordinator in (
+                    ("readings", runtime_data.readings),
+                    ("settings", runtime_data.settings),
+                )
+            },
+            "held_setpoints": {
+                key: hold.value
+                for key in ("battery_power", "feed_in_limit", "active_power_limit")
+                if (hold := runtime_data.holds.get(key)) is not None
+            },
             "read_error": read_error,
             "raw": raw,
         },
