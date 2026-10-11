@@ -1,6 +1,6 @@
 """Tests for the E3/DC switch platform."""
 
-from e3dc_ess_modbus import register
+from e3dc_ess_modbus.model import register
 from modbus_connection import IllegalDataValueError
 from modbus_connection.mock import MockModbusUnit
 import pytest

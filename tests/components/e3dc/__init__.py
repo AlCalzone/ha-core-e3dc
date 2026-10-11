@@ -1,6 +1,6 @@
 """Tests for the E3/DC integration."""
 
-from e3dc_ess_modbus import register
+from e3dc_ess_modbus.model import register
 from modbus_connection.mock import MockModbusUnit
 
 from homeassistant.const import CONF_HOST, CONF_PORT

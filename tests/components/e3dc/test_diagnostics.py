@@ -1,6 +1,6 @@
 """Tests for the E3/DC diagnostics."""
 
-from e3dc_ess_modbus import register
+from e3dc_ess_modbus.model import register
 from modbus_connection import ModbusConnectionError
 from modbus_connection.mock import MockModbusUnit
 from syrupy.assertion import SnapshotAssertion

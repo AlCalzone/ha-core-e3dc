@@ -3,7 +3,7 @@
 from typing import Any
 from unittest.mock import MagicMock
 
-from e3dc_ess_modbus import register
+from e3dc_ess_modbus.model import register
 from modbus_connection import IllegalDataAddressError, IllegalDataValueError
 from modbus_connection.mock import MockModbusUnit, WriteEvent
 import probatio

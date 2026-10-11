@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from e3dc_ess_modbus import register
+from e3dc_ess_modbus.model import register
 from modbus_connection import ModbusError
 
 from homeassistant.components.diagnostics import async_redact_data
@@ -41,8 +41,8 @@ async def async_get_config_entry_diagnostics(
             "register_count": identity.register_count,
             "readings_components": device.readings_components,
             "settings_components": device.settings_components,
-            "inverters": sorted(device.inverter_slots),
-            "wallboxes": [number for number, _ in device.wallboxes.available],
+            "inverters": sorted(device.inverters or ()),
+            "wallboxes": [number for number, _ in device.wallboxes.configured],
             "read_error": read_error,
             "raw": raw,
         },

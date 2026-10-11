@@ -4,6 +4,8 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import override
 
+from e3dc_ess_modbus import E3dcPowerStation
+
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity import Entity, EntityDescription
@@ -71,24 +73,36 @@ class E3dcEntity(CoordinatorEntity[E3dcDataUpdateCoordinator]):
         return self.entity_description.component not in self.coordinator.data.failed
 
 
+def present_wallboxes(device: E3dcPowerStation) -> list[int]:
+    """The wallbox slots the power station reports as configured."""
+    return [number for number, _ in device.wallboxes.configured]
+
+
+def present_inverters(device: E3dcPowerStation) -> list[int]:
+    """The power station's own inverter and each additional one on the grid."""
+    return [
+        number
+        for number, inverter in (device.inverters or {}).items()
+        if number == 0 or inverter.is_connected
+    ]
+
+
 @callback
-def async_add_wallbox_entities(
+def async_add_part_entities(
     entry: E3dcConfigEntry,
     platform: str,
+    kind: str,
+    present: Callable[[E3dcPowerStation], Iterable[int]],
     async_add_entities: AddConfigEntryEntitiesCallback,
     entities_for: Callable[[int], Iterable[Entity]],
 ) -> None:
-    """Add a wallbox's entities the first time the power station reports it."""
+    """Add a part's entities the first time the power station reports it."""
     runtime_data = entry.runtime_data
-    wired = runtime_data.wired_wallboxes.setdefault(platform, set())
+    wired = runtime_data.wired_parts.setdefault((kind, platform), set())
 
     @callback
     def _async_add_new() -> None:
-        new = [
-            number
-            for number, _ in runtime_data.device.wallboxes.available
-            if number not in wired
-        ]
+        new = [number for number in present(runtime_data.device) if number not in wired]
         if not new:
             return
         wired.update(new)

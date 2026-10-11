@@ -15,7 +15,12 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import DOMAIN
 from .coordinator import E3dcConfigEntry
-from .entity import E3dcEntity, E3dcEntityDescription, async_add_wallbox_entities
+from .entity import (
+    E3dcEntity,
+    E3dcEntityDescription,
+    async_add_part_entities,
+    present_wallboxes,
+)
 
 PARALLEL_UPDATES = 1
 
@@ -76,9 +81,11 @@ async def async_setup_entry(
 ) -> None:
     """Set up the E3/DC switch platform."""
     runtime_data = entry.runtime_data
-    async_add_wallbox_entities(
+    async_add_part_entities(
         entry,
         Platform.SWITCH,
+        "wallbox",
+        present_wallboxes,
         async_add_entities,
         lambda number: (
             E3dcSwitch(runtime_data, description)

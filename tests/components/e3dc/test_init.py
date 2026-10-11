@@ -3,7 +3,7 @@
 from datetime import timedelta
 from unittest.mock import MagicMock
 
-from e3dc_ess_modbus import register
+from e3dc_ess_modbus.model import register
 from freezegun.api import FrozenDateTimeFactory
 from modbus_connection import (
     IllegalDataAddressError,
@@ -249,3 +249,21 @@ async def test_remove_wallbox_of_unloaded_entry(
         )
         is True
     )
+
+
+@pytest.mark.parametrize("platforms", [[Platform.SENSOR]])
+async def test_inverter_added_when_it_connects(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    init_integration: MockConfigEntry,
+    mock_unit: MockModbusUnit,
+) -> None:
+    """Test an additional inverter gets its entities once it reports a grid voltage."""
+    assert hass.states.get("sensor.inverter_1_active_power_l1") is None
+
+    seed(mock_unit, {41034 + 18: 2302, 41034 + 6: [1200, 0]})
+    freezer.tick(_SCAN)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get("sensor.inverter_1_active_power_l1").state == "1200"

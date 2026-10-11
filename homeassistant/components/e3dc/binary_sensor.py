@@ -16,7 +16,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import E3dcConfigEntry
-from .entity import E3dcEntity, E3dcEntityDescription, async_add_wallbox_entities
+from .entity import (
+    E3dcEntity,
+    E3dcEntityDescription,
+    async_add_part_entities,
+    present_wallboxes,
+)
 
 PARALLEL_UPDATES = 0
 
@@ -120,9 +125,11 @@ async def async_setup_entry(
         for description in STATION_BINARY_SENSORS
         if description.component in served
     )
-    async_add_wallbox_entities(
+    async_add_part_entities(
         entry,
         Platform.BINARY_SENSOR,
+        "wallbox",
+        present_wallboxes,
         async_add_entities,
         lambda number: (
             E3dcBinarySensor(runtime_data, description)

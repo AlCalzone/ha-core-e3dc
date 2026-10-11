@@ -16,7 +16,7 @@ from homeassistant.helpers.typing import ConfigType
 from .config_flow import create_modbus_params
 from .const import DOMAIN, SCAN_INTERVAL, SETTINGS_SCAN_INTERVAL, UNIT_ID
 from .coordinator import E3dcConfigEntry, E3dcDataUpdateCoordinator, E3dcRuntimeData
-from .entity import part_identifier
+from .entity import part_identifier, present_wallboxes
 from .services import async_setup_services
 
 PLATFORMS: list[Platform] = [
@@ -97,14 +97,15 @@ async def async_remove_config_entry_device(
         removed.add(number)
 
     if runtime_data is not None:
-        for wired in runtime_data.wired_wallboxes.values():
-            wired -= removed
+        for (kind, _), wired in runtime_data.wired_parts.items():
+            if kind == "wallbox":
+                wired -= removed
     return True
 
 
 def _wallbox_reported(runtime_data: E3dcRuntimeData, number: int) -> bool:
     """Whether the power station still reports a wallbox in this slot."""
-    return any(slot == number for slot, _ in runtime_data.device.wallboxes.available)
+    return number in present_wallboxes(runtime_data.device)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool:

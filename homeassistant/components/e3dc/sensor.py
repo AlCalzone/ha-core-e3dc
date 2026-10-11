@@ -22,6 +22,7 @@ from homeassistant.components.sensor import (
 from homeassistant.const import (
     PERCENTAGE,
     EntityCategory,
+    Platform,
     UnitOfApparentPower,
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
@@ -36,7 +37,12 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
 from .coordinator import E3dcConfigEntry, E3dcRuntimeData
-from .entity import E3dcEntity, E3dcEntityDescription
+from .entity import (
+    E3dcEntity,
+    E3dcEntityDescription,
+    async_add_part_entities,
+    present_inverters,
+)
 
 PARALLEL_UPDATES = 0
 
@@ -52,7 +58,7 @@ def _dc_string_value(
     """Read ``attribute`` of DC string ``number``."""
 
     def _value(device: E3dcPowerStation) -> StateType:
-        value: StateType = getattr(device.dc_string_list[number - 1], attribute)
+        value: StateType = getattr(device.dc_strings[number - 1], attribute)
         return value
 
     return _value
@@ -287,13 +293,13 @@ STATION_SENSORS: tuple[E3dcSensorDescription, ...] = (
     E3dcSensorDescription(
         key="inverter_mode",
         translation_key="inverter_mode",
-        component="battery_control",
+        component="inverter_mode_control",
         device_class=SensorDeviceClass.ENUM,
         options=_enum_options(InverterMode),
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda device: (
-            battery.inverter_mode
-            if (battery := device.battery_control) is not None
+            mode.inverter_mode
+            if (mode := device.inverter_mode_control) is not None
             else None
         ),
     ),
@@ -353,7 +359,8 @@ def _inverter_value(
     """Read ``attribute`` of inverter slot ``number``."""
 
     def _value(device: E3dcPowerStation) -> StateType:
-        inverter: Inverter = device.inverter_slots[number]
+        assert device.inverters is not None
+        inverter: Inverter = device.inverters[number]
         value: StateType = getattr(inverter, attribute)
         return value
 
@@ -485,8 +492,6 @@ def _descriptions(runtime_data: E3dcRuntimeData) -> list[E3dcSensorDescription]:
     for number in range(len(device.power_meters.meters)):
         if device.power_meter(number).is_installed:
             descriptions.extend(_power_meter_sensors(number))
-    for number in device.inverter_slots:
-        descriptions.extend(_inverter_sensors(number))
     return descriptions
 
 
@@ -500,6 +505,17 @@ async def async_setup_entry(
     async_add_entities(
         E3dcSensor(runtime_data, description)
         for description in _descriptions(runtime_data)
+    )
+    async_add_part_entities(
+        entry,
+        Platform.SENSOR,
+        "inverter",
+        present_inverters,
+        async_add_entities,
+        lambda number: (
+            E3dcSensor(runtime_data, description)
+            for description in _inverter_sensors(number)
+        ),
     )
 
 

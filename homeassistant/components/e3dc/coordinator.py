@@ -102,8 +102,8 @@ class E3dcRuntimeData:
     readings: E3dcDataUpdateCoordinator
     settings: E3dcDataUpdateCoordinator
     station_device_id: str
-    # The wallboxes each platform has added entities for, keyed by platform.
-    wired_wallboxes: dict[str, set[int]] = field(default_factory=dict)
+    # The parts each platform has added entities for, keyed by (kind, platform).
+    wired_parts: dict[tuple[str, str], set[int]] = field(default_factory=dict)
 
     @property
     def device(self) -> E3dcPowerStation:
