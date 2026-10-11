@@ -7,7 +7,7 @@
 # The generation steps run only when the checkout has a .venv.
 set -euo pipefail
 
-core=${1:?usage: $0 <path to a home-assistant/core checkout>}
+core=$(cd "${1:?usage: $0 <path to a home-assistant/core checkout>}" && pwd)
 here=$(cd "$(dirname "$0")/.." && pwd)
 
 rsync -a --delete --exclude translations --exclude __pycache__ \
