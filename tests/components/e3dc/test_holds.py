@@ -14,6 +14,11 @@ from modbus_connection import (
 )
 from modbus_connection.mock import MockModbusUnit, WriteEvent
 import pytest
+from pytest_homeassistant.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+    mock_restore_cache_with_extra_data,
+)
 
 from homeassistant.components.e3dc.const import SETTINGS_SCAN_INTERVAL
 from homeassistant.components.e3dc.holds import REWRITE_INTERVAL
@@ -35,12 +40,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError
-
-from tests.common import (
-    MockConfigEntry,
-    async_fire_time_changed,
-    mock_restore_cache_with_extra_data,
-)
 
 BATTERY_POWER = "number.s10_x_battery_power_setpoint"
 BATTERY_CONTROL = "switch.s10_x_battery_power_control"

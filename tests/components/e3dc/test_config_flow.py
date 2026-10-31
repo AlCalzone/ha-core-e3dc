@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, _patch, patch
 from modbus_connection import ModbusTcpParams, ModbusTimeoutError
 from modbus_connection.mock import MockModbusConnection, MockModbusUnit
 import pytest
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.components.e3dc.const import DOMAIN
 from homeassistant.config_entries import SOURCE_USER
@@ -16,8 +17,6 @@ from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.exceptions import HomeAssistantError
 
 from . import MOCK_ENTRY_DATA, MOCK_MODEL, MOCK_SERIAL, seed, seed_identity
-
-from tests.common import MockConfigEntry
 
 
 def _patch_temporary_unit(connection: MockModbusConnection) -> _patch[AsyncMock]:

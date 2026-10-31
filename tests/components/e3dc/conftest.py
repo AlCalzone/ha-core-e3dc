@@ -5,14 +5,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from modbus_connection.mock import MockModbusConnection, MockModbusUnit
 import pytest
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.components.e3dc.const import DOMAIN
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
 from . import MOCK_ENTRY_DATA, MOCK_MODEL, MOCK_SERIAL, seed_power_station
-
-from tests.common import MockConfigEntry
 
 
 @pytest.fixture

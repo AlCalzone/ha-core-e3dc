@@ -12,6 +12,8 @@ from modbus_connection import (
 )
 from modbus_connection.mock import MockModbusConnection, MockModbusUnit
 import pytest
+from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
+from pytest_homeassistant.typing import WebSocketGenerator
 from syrupy.assertion import SnapshotAssertion
 
 from homeassistant.components.e3dc.const import DOMAIN, SCAN_INTERVAL, UNIT_ID
@@ -23,9 +25,6 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.setup import async_setup_component
 
 from . import MOCK_SERIAL, seed, seed_identity
-
-from tests.common import MockConfigEntry, async_fire_time_changed
-from tests.typing import WebSocketGenerator
 
 _SCAN = timedelta(seconds=SCAN_INTERVAL)
 
