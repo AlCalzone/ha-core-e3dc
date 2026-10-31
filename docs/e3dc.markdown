@@ -80,11 +80,10 @@ The power station device has these sensors:
 - **Battery**: the battery's state of charge.
 - **Self-sufficiency** and **Self-consumption**, in percent.
 - **Emergency power**: whether emergency power is active, inactive, not available or not supported. On the S10 E and S10 E PRO, **Motor switch off** means the emergency power motor switch is not in its on position.
-- **DC string 1 power** and **DC string 2 power**, plus their voltage and current, which are disabled by default.
-- **Stored energy**, **Battery capacity**, **Maximum charge power** and **Maximum discharge power**, on firmware 2026_04 and later.
+- **Stored energy**, **Battery capacity**, **Maximum charge power** and **Maximum discharge power**, on firmware 2026_04 and later, if the power station reports its battery capacity.
 - **Inverter mode**, the failsafe timeouts and the **SG Ready status**, as diagnostic sensors.
 
-Each configured power meter gets its own device with its type, its total power, and the power per phase, which is disabled by default. The power station's own inverter and each additional solar inverter also get a device with their power, voltage, current and frequency per phase. Most inverter sensors are disabled by default.
+Each configured power meter gets its own device with its type, its total power, and the power per phase, which is disabled by default. The power station's own inverter and each additional solar inverter also get a device with their power, voltage, current and frequency per phase, and the power, voltage and current of each DC tracker. Most inverter sensors are disabled by default.
 
 ### Binary sensors
 

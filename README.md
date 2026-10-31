@@ -14,7 +14,7 @@ docs/e3dc.markdown               the page for home-assistant.io
 
 - A config flow that asks for the host and port, and checks register 40001 for the E3/DC identifier. The unit ID is fixed at 1.
 - Two coordinators: measurements every 5 seconds, remote control settings every 60.
-- Sensors for the power flows, battery, DC strings, power meters and inverters, and binary sensors for the EMS status bits.
+- Sensors for the power flows, battery, power meters and inverters, and binary sensors for the EMS status bits.
 - A device per wallbox, with charging, solar mode and phase switches. Wallboxes the power station reports later are added on the fly.
 - A number and a switch per remote setpoint (battery power, feed-in limit, active power limit). Setting the number writes it, and the integration rewrites it every 10 seconds while the switch is on.
 - Diagnostics with the raw register dump. The serial number registers are left out.
