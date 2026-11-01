@@ -17,22 +17,23 @@ This repository holds the full integration. Core takes it in small pull requests
 
 The [dependency-transparency](https://contributors.home-assistant.io/core/quality-scale/dependency-transparency/) rule wants an OSI license, a PyPI release built by public CI, and a git tag for every PyPI version. The repository has the Apache 2.0 license and `publish.yml` already. The `pypi` environment exists, with required reviewers and the `*.*.*` tag rule.
 
-- [ ] On PyPI, add a pending trusted publisher: project `e3dc-ess-modbus`, owner `AlCalzone`, repository `e3dc-ess-modbus`, workflow `publish.yml`, environment `pypi`.
-- [ ] Check that CI is green on `main`.
-- [ ] Draft a GitHub release with the tag `0.1.0` on `main`, and publish it.
-- [ ] Approve the `publish` job in the Actions tab.
-- [ ] Check that https://pypi.org/project/e3dc-ess-modbus/0.1.0/ exists.
-- [ ] Switch the CI here from the git install to `e3dc-ess-modbus==0.1.0`.
-- [ ] Set `dependency-transparency: done` in `quality_scale.yaml`.
+- [x] On PyPI, add a pending trusted publisher: project `e3dc-ess-modbus`, owner `AlCalzone`, repository `e3dc-ess-modbus`, workflow `publish.yml`, environment `pypi`.
+- [x] Check that CI is green on `main`.
+- [x] Draft a GitHub release with the tag `0.1.0` on `main`, and publish it.
+- [x] Approve the `publish` job in the Actions tab.
+- [x] Check that https://pypi.org/project/e3dc-ess-modbus/0.1.0/ exists.
+- [x] Switch the CI here from the git install to `e3dc-ess-modbus==0.1.0`.
+- [x] Set `dependency-transparency: done` in `quality_scale.yaml`.
 
 ## 3. Brand images
 
 Brands live in [home-assistant/brands](https://github.com/home-assistant/brands), in `core_integrations/<domain>/`. The repository already has `custom_integrations/e3dc`, from home-assistant/brands#9209 for [e3dc-homeassistant](https://github.com/JohannLegler/e3dc-homeassistant). The brands README says a core domain takes precedence over a custom one, so this doesn't block the core domain.
 
 - [x] Keep the domain `e3dc`. Sofar was submitted as `sofar_modbus`, and @joostlek asked in review "why sofar_modbus, and why not sofar?" (home-assistant/core#179329). It was renamed to `sofar`.
-- [ ] Let @JohannLegler know that a core integration takes the `e3dc` domain, if it stays `e3dc`. Their custom integration would then override the core one for anyone who has it installed.
-- [ ] Open the brands pull request with `icon.png`, `icon@2x.png`, `logo.png` and `logo@2x.png` (and dark variants if needed) in `core_integrations/<domain>/`.
-- [ ] Set `brands: done` in `quality_scale.yaml` once it is merged. Until then hassfest fails the Bronze tier.
+- [ ] Let @JohannLegler know that a core integration takes the `e3dc` domain. Their custom integration overrides the core one for anyone who has it installed. After removing it, their entries fail core's serial number check, because their unique ID is the host, so users have to set them up again.
+- [x] Open the brands pull request: home-assistant/brands#11393 moves the 8 existing images from `custom_integrations/e3dc` to `core_integrations/e3dc`.
+- [x] Set `brands: done` in `quality_scale.yaml`, with the brands pull request linked from the core one.
+- [ ] Get home-assistant/brands#11393 merged.
 
 ## 4. First core pull request: config flow and sensors
 
@@ -40,15 +41,15 @@ Scope: Bronze tier, one platform, nothing extra. Core reviewers close large firs
 
 Keep:
 
-- [ ] `manifest.json`, with `"quality_scale": "bronze"`.
-- [ ] `config_flow.py` with the user step only.
-- [ ] `__init__.py` with setup, the serial number check and unload. Only the sensor platform.
-- [ ] `coordinator.py` with the readings coordinator only.
-- [ ] `entity.py` with the base entity on the power station device only.
-- [ ] `sensor.py` with the `power` block only: PV, battery, house, grid, additional feeder and wallbox power, battery state of charge, autarky, self-consumption, and the emergency power status.
-- [ ] `strings.json` trimmed to the kept entities, errors and exceptions.
-- [ ] `quality_scale.yaml` with every Bronze rule `done` or `exempt`. Every higher rule goes back to `todo`, except the ones that are honestly `exempt`.
-- [ ] Tests: `test_config_flow.py`, `test_init.py`, `test_sensor.py` and the sensor snapshot. Full coverage of `config_flow.py`, the rest above 95 %.
+- [x] `manifest.json`, with `"quality_scale": "bronze"`.
+- [x] `config_flow.py` with the user step only.
+- [x] `__init__.py` with setup, the serial number check and unload. Only the sensor platform.
+- [x] `coordinator.py` with the readings coordinator only.
+- [x] `entity.py` with the base entity on the power station device only.
+- [x] `sensor.py` with the `power` block only: PV, battery, house, grid, additional feeder and wallbox power, battery state of charge, autarky, self-consumption, and the emergency power status.
+- [x] `strings.json` trimmed to the kept entities, errors and exceptions.
+- [x] `quality_scale.yaml` with every Bronze rule `done` or `exempt`. Every higher rule goes back to `todo`, except the ones that are honestly `exempt`.
+- [x] Tests: `test_config_flow.py`, `test_init.py`, `test_sensor.py` and the sensor snapshot. Full coverage of `config_flow.py`, the rest above 95 %.
 
 Leave out, for later pull requests:
 
@@ -59,15 +60,17 @@ Leave out, for later pull requests:
 
 Steps:
 
-- [ ] Branch from the latest core `dev`.
-- [ ] Copy the trimmed integration and tests into core.
-- [ ] Add the domain to `.strict-typing`.
-- [ ] Run `python3 -m script.hassfest` and `python3 -m script.gen_requirements_all`. They update `CODEOWNERS`, `homeassistant/generated/config_flows.py`, `homeassistant/generated/integrations.json`, `mypy.ini` and `requirements_all.txt`.
-- [ ] Run `python3 -m script.translations develop --integration e3dc`, then `uv run --no-sync pytest tests/components/e3dc`.
-- [ ] Run `uv run --no-sync prek run --all-files`.
+- [x] Branch from the latest core `dev`.
+- [x] Copy the trimmed integration and tests into core.
+- [x] Add the domain to `.strict-typing`.
+- [x] Run `python3 -m script.hassfest` and `python3 -m script.gen_requirements_all`. They update `CODEOWNERS`, `homeassistant/generated/config_flows.py`, `homeassistant/generated/integrations.json`, `mypy.ini` and `requirements_all.txt`.
+- [x] Run `python3 -m script.translations develop --integration e3dc`, then `uv run --no-sync pytest tests/components/e3dc`.
+- [x] Run `uv run --no-sync prek run --all-files`.
 - [ ] Set the integration up in a running Home Assistant against the real power station.
-- [ ] Search the diff for `TODO`.
-- [ ] Open the pull request with the full template. Check "New integration". Explain what an E3/DC power station is. Link the library repository, the `publish.yml` workflow and the `0.1.0` tag, the brands pull request and the docs pull request.
+- [x] Search the diff for `TODO`.
+- [x] Open the pull request as a draft with the full template: home-assistant/core#189806, from `AlCalzone:add-e3dc-integration`. It links the library repository, the `publish.yml` workflow and the `0.1.0` tag.
+- [x] Link the brands pull request in its description, and set `brands: done`.
+- [ ] Link the docs pull request in its description, and mark it ready for review.
 - [ ] Sign the CLA if the bot asks.
 
 ## 5. Documentation pull request
