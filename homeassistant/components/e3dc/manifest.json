@@ -1,6 +1,7 @@
 {
   "domain": "e3dc",
   "name": "E3/DC",
+  "categories": ["energy.solar_batteries"],
   "codeowners": ["@AlCalzone"],
   "config_flow": true,
   "dependencies": ["modbus"],
