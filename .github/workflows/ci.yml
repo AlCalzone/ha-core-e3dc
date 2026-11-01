@@ -40,7 +40,7 @@ jobs:
             -r requirements_test.txt -r requirements_test_pre_commit.txt \
             "$(pin 'modbus-connection\[tmodbus\]')" "$(pin tmodbus)" "$(pin pymodbus)" \
             "$(pin paho-mqtt)" "$(pin aiohasupervisor)" \
-            "$(pin e3dc-ess-modbus)"
+            "$(jq -r '.requirements[0]' ../integration/homeassistant/components/e3dc/manifest.json)"
       - name: Generate translations
         working-directory: core
         run: .venv/bin/python -m script.translations develop --all
