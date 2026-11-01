@@ -34,20 +34,6 @@ def _patch_temporary_unit(connection: MockModbusConnection) -> _patch[AsyncMock]
     )
 
 
-class _RaisingTemporaryUnit:
-    """Stand in for a temporary-unit context whose __aenter__ raises."""
-
-    def __init__(self, error: Exception) -> None:
-        """Initialize with the error to raise on entry."""
-        self._error = error
-
-    async def __aenter__(self) -> None:
-        raise self._error
-
-    async def __aexit__(self, *args: object) -> None:
-        """No cleanup: entry never succeeded."""
-
-
 @pytest.fixture
 def identified() -> MockModbusConnection:
     """A connection to a power station that answers its identity."""
@@ -56,11 +42,19 @@ def identified() -> MockModbusConnection:
     return connection
 
 
+@pytest.mark.parametrize(
+    ("model", "title"),
+    [
+        pytest.param(MOCK_MODEL, f"E3/DC {MOCK_MODEL}", id="model"),
+        pytest.param("one", "E3/DC One", id="lower_case_model"),
+    ],
+)
 @pytest.mark.usefixtures("mock_setup_entry")
 async def test_user_step_success(
-    hass: HomeAssistant, identified: MockModbusConnection
+    hass: HomeAssistant, identified: MockModbusConnection, model: str, title: str
 ) -> None:
-    """Test the flow probes the power station and creates an entry."""
+    """Test the flow probes the power station and creates an entry named after it."""
+    seed_identity(identified.for_unit(1), model=model)
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
     )
@@ -76,27 +70,9 @@ async def test_user_step_success(
         hass, ModbusTcpParams(host="192.168.1.100", port=1502), 1
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == f"E3/DC {MOCK_MODEL}"
+    assert result["title"] == title
     assert result["data"] == {CONF_HOST: "192.168.1.100", CONF_PORT: 1502}
     assert result["result"].unique_id == MOCK_SERIAL
-
-
-@pytest.mark.usefixtures("mock_setup_entry")
-async def test_user_step_capitalizes_the_model(hass: HomeAssistant) -> None:
-    """Test the title capitalizes a model reported in lower case."""
-    connection = MockModbusConnection()
-    seed_identity(connection.for_unit(1), model="one")
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": SOURCE_USER}
-    )
-
-    with _patch_temporary_unit(connection):
-        result = await hass.config_entries.flow.async_configure(
-            result["flow_id"], MOCK_ENTRY_DATA
-        )
-
-    assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "E3/DC One"
 
 
 @pytest.mark.parametrize(
@@ -120,7 +96,7 @@ async def test_user_step_cannot_connect(
     )
     with patch(
         "homeassistant.components.e3dc.config_flow.async_get_temporary_unit",
-        return_value=_RaisingTemporaryUnit(error),
+        side_effect=error,
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], MOCK_ENTRY_DATA
@@ -236,7 +212,7 @@ async def test_reconfigure_cannot_connect(
     result = await mock_config_entry.start_reconfigure_flow(hass)
     with patch(
         "homeassistant.components.e3dc.config_flow.async_get_temporary_unit",
-        return_value=_RaisingTemporaryUnit(ModbusTimeoutError()),
+        side_effect=ModbusTimeoutError(),
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], {CONF_HOST: "192.168.1.200", CONF_PORT: 502}

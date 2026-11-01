@@ -26,7 +26,12 @@ from homeassistant.setup import async_setup_component
 
 from . import MOCK_SERIAL, seed, seed_identity
 
-_SCAN = timedelta(seconds=SCAN_INTERVAL)
+
+async def _poll(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
+    """Let the readings coordinator poll once."""
+    freezer.tick(timedelta(seconds=SCAN_INTERVAL))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
 
 
 async def test_setup_and_unload(
@@ -107,17 +112,13 @@ async def test_failed_component_goes_unavailable(
 ) -> None:
     """Test only the entities of a refused block go unavailable."""
     mock_unit.fail_read(register(40105), IllegalDataAddressError())
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("sensor.power_meter_0_power").state == STATE_UNAVAILABLE
     assert hass.states.get("sensor.s10_x_pv_power").state == "5321"
 
     mock_unit.fail_read(register(40105), None)
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("sensor.power_meter_0_power").state == "50"
 
@@ -131,16 +132,12 @@ async def test_dead_link_makes_everything_unavailable(
 ) -> None:
     """Test a dropped link marks the power station unavailable until it answers."""
     mock_unit.fail_requests(ModbusConnectionError())
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("sensor.s10_x_pv_power").state == STATE_UNAVAILABLE
 
     mock_unit.fail_requests(None)
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("sensor.s10_x_pv_power").state == "5321"
 
@@ -155,9 +152,7 @@ async def test_every_component_failing_marks_the_poll_failed(
     """Test a poll where no component answers fails as a whole."""
     for index in (40068, 40096, 40088, 40105, 40137, 40188, 40200, 40202, 41000):
         mock_unit.fail_read(register(index), IllegalDataAddressError())
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     coordinator = init_integration.runtime_data.readings
     assert not coordinator.last_update_success
@@ -175,9 +170,7 @@ async def test_wallbox_added_when_it_appears(
     assert hass.states.get("switch.wallbox_1_charging") is None
 
     seed(mock_unit, {40089: 0b1})
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("switch.wallbox_1_charging").state == "on"
 
@@ -199,9 +192,7 @@ async def test_remove_stale_wallbox(
     )
 
     seed(mock_unit, {40088: 0})
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert (
         await _remove(
@@ -262,9 +253,7 @@ async def test_inverter_added_when_it_connects(
     assert hass.states.get("sensor.inverter_1_active_power_l1") is None
 
     seed(mock_unit, {41034 + 18: 2302, 41034 + 6: [1200, 0]})
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("sensor.inverter_1_active_power_l1").state == "1200"
 
@@ -391,9 +380,7 @@ async def test_meter_added_when_it_appears(
     assert hass.states.get("sensor.power_meter_2_power") is None
 
     seed(mock_unit, {40113: 2, 40114: 300})
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("sensor.power_meter_2_power") is not None
 
@@ -407,8 +394,6 @@ async def test_unconfigured_wallbox_goes_unavailable(
 ) -> None:
     """Test a wallbox the power station stops reporting goes unavailable."""
     seed(mock_unit, {40088: 0})
-    freezer.tick(_SCAN)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+    await _poll(hass, freezer)
 
     assert hass.states.get("switch.wallbox_0_charging").state == STATE_UNAVAILABLE
