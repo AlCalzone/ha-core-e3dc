@@ -14,10 +14,12 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import DOMAIN
-from .coordinator import E3dcConfigEntry, E3dcRuntimeData
+from .coordinator import E3dcConfigEntry
 from .entity import (
     E3dcEntity,
     E3dcEntityDescription,
+    E3dcSetpointDescription,
+    E3dcSetpointEntity,
     async_add_part_entities,
     present_wallboxes,
 )
@@ -71,10 +73,8 @@ def wallbox_switches(number: int) -> list[E3dcSwitchEntityDescription]:
 
 
 @dataclass(frozen=True, kw_only=True)
-class E3dcSetpointSwitchDescription(SwitchEntityDescription, E3dcEntityDescription):
+class E3dcSetpointSwitchDescription(SwitchEntityDescription, E3dcSetpointDescription):
     """Describe a switch that holds a setpoint or hands it back."""
-
-    setpoint: Setpoint
 
 
 SETPOINT_SWITCHES: tuple[E3dcSetpointSwitchDescription, ...] = (
@@ -155,7 +155,7 @@ class E3dcSwitch(E3dcEntity, SwitchEntity):
         await self._async_write(False)
 
 
-class E3dcSetpointSwitch(E3dcEntity, SwitchEntity):
+class E3dcSetpointSwitch(E3dcSetpointEntity, SwitchEntity):
     """On while the integration holds a setpoint.
 
     It is unknown while a rewrite or a hand-back fails, because the device
@@ -163,26 +163,6 @@ class E3dcSetpointSwitch(E3dcEntity, SwitchEntity):
     """
 
     entity_description: E3dcSetpointSwitchDescription
-
-    def __init__(
-        self,
-        runtime_data: E3dcRuntimeData,
-        entity_description: E3dcSetpointSwitchDescription,
-    ) -> None:
-        """Initialize the switch."""
-        super().__init__(runtime_data, entity_description)
-        self._holds = runtime_data.holds
-
-    @override
-    async def async_added_to_hass(self) -> None:
-        await super().async_added_to_hass()
-        self.async_on_remove(self._holds.async_add_listener(self.async_write_ha_state))
-
-    @property
-    @override
-    def available(self) -> bool:
-        """Always, because holding a setpoint doesn't depend on the last poll."""
-        return True
 
     @property
     @override

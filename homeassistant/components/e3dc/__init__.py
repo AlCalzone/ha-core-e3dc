@@ -128,7 +128,8 @@ def _async_remove_stale_devices(hass: HomeAssistant, entry: E3dcConfigEntry) -> 
     looks the same as one that is gone. Those are left to be removed by hand.
     """
     serial = entry.unique_id
-    assert serial is not None
+    if TYPE_CHECKING:
+        assert serial is not None
     if (reported := _reported_parts(entry.runtime_data)) is None:
         return
     registry = dr.async_get(hass)

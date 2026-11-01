@@ -15,17 +15,15 @@ from homeassistant.const import PERCENTAGE, UnitOfPower
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import E3dcConfigEntry, E3dcRuntimeData
-from .entity import E3dcEntity, E3dcEntityDescription
+from .coordinator import E3dcConfigEntry
+from .entity import E3dcSetpointDescription, E3dcSetpointEntity
 
 PARALLEL_UPDATES = 1
 
 
 @dataclass(frozen=True, kw_only=True)
-class E3dcSetpointNumberDescription(NumberEntityDescription, E3dcEntityDescription):
+class E3dcSetpointNumberDescription(NumberEntityDescription, E3dcSetpointDescription):
     """Describe a setpoint the integration holds once it is set."""
-
-    setpoint: Setpoint
 
 
 SETPOINT_NUMBERS: tuple[E3dcSetpointNumberDescription, ...] = (
@@ -82,7 +80,7 @@ async def async_setup_entry(
     )
 
 
-class E3dcSetpointNumber(E3dcEntity, RestoreNumber):
+class E3dcSetpointNumber(E3dcSetpointEntity, RestoreNumber):
     """A setpoint: setting it writes it and starts holding it.
 
     It shows the last value set, held or not, and restores it after a
@@ -91,19 +89,9 @@ class E3dcSetpointNumber(E3dcEntity, RestoreNumber):
 
     entity_description: E3dcSetpointNumberDescription
 
-    def __init__(
-        self,
-        runtime_data: E3dcRuntimeData,
-        entity_description: E3dcSetpointNumberDescription,
-    ) -> None:
-        """Initialize the number."""
-        super().__init__(runtime_data, entity_description)
-        self._holds = runtime_data.holds
-
     @override
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
-        self.async_on_remove(self._holds.async_add_listener(self.async_write_ha_state))
         setpoint = self.entity_description.setpoint
         last = await self.async_get_last_number_data()
         # A value set while the restore was loading wins over the restored one
@@ -113,12 +101,6 @@ class E3dcSetpointNumber(E3dcEntity, RestoreNumber):
             and self._holds.requested(setpoint) is None
         ):
             self._holds.remember(setpoint, last.native_value)
-
-    @property
-    @override
-    def available(self) -> bool:
-        """Always, because holding a setpoint doesn't depend on the last poll."""
-        return True
 
     @property
     @override

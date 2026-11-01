@@ -2,9 +2,9 @@
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
-from e3dc_ess_modbus import E3dcPowerStation
+from e3dc_ess_modbus import E3dcPowerStation, Setpoint
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
@@ -25,6 +25,13 @@ class E3dcEntityDescription(EntityDescription):
 
     component: str  # attribute name on E3dcPowerStation, e.g. 'power'
     part: E3dcPart | None = None  # None keeps the entity on the power station
+
+
+@dataclass(frozen=True, kw_only=True)
+class E3dcSetpointDescription(E3dcEntityDescription):
+    """Describe an entity for a setpoint the integration holds."""
+
+    setpoint: Setpoint
 
 
 def part_identifier(serial: str, part: E3dcPart) -> str:
@@ -48,7 +55,8 @@ class E3dcEntity(CoordinatorEntity[E3dcDataUpdateCoordinator]):
         super().__init__(runtime_data.coordinator_for(entity_description.component))
         self.entity_description = entity_description
         serial = self.coordinator.config_entry.unique_id
-        assert serial is not None
+        if TYPE_CHECKING:
+            assert serial is not None
         self._attr_unique_id = f"{serial}_{entity_description.key}"
         self._attr_device_info = self._device_info(runtime_data, serial)
 
@@ -73,11 +81,35 @@ class E3dcEntity(CoordinatorEntity[E3dcDataUpdateCoordinator]):
         if self.entity_description.component in self.coordinator.data.failed:
             return False
         part = self.entity_description.part
-        return (
-            part is None
-            or part[0] != "wallbox"
-            or part[1] in present_wallboxes(self.coordinator.device)
-        )
+        if part is None or part[0] != "wallbox":
+            return True
+        return bool(self.coordinator.device.wallboxes.slots[part[1]].available)
+
+
+class E3dcSetpointEntity(E3dcEntity):
+    """An entity that shows a setpoint the integration holds."""
+
+    entity_description: E3dcSetpointDescription
+
+    def __init__(
+        self,
+        runtime_data: E3dcRuntimeData,
+        entity_description: E3dcSetpointDescription,
+    ) -> None:
+        """Initialize the entity."""
+        super().__init__(runtime_data, entity_description)
+        self._holds = runtime_data.holds
+
+    @override
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(self._holds.async_add_listener(self.async_write_ha_state))
+
+    @property
+    @override
+    def available(self) -> bool:
+        """Always, because holding a setpoint doesn't depend on the last poll."""
+        return True
 
 
 def present_wallboxes(device: E3dcPowerStation) -> list[int]:
