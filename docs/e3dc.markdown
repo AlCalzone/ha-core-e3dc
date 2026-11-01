@@ -4,7 +4,7 @@ description: Instructions on how to integrate an E3/DC home power station with H
 ha_category:
   - Energy
   - Modbus-controlled
-ha_release: 2026.11
+ha_release: 2026.12
 ha_iot_class: Local Polling
 ha_codeowners:
   - '@AlCalzone'
