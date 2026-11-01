@@ -70,14 +70,18 @@ Steps:
 - [x] Search the diff for `TODO`.
 - [x] Open the pull request as a draft with the full template: home-assistant/core#189806, from `AlCalzone:add-e3dc-integration`. It links the library repository, the `publish.yml` workflow and the `0.1.0` tag.
 - [x] Link the brands pull request in its description, and set `brands: done`.
-- [ ] Link the docs pull request in its description, and mark it ready for review.
+- [x] Link the docs pull request in its description.
+- [ ] Mark the core, docs and brands pull requests ready for review.
+- [x] Port the review fixes from home-assistant/core#189806 here: close the station after a failed probe in the config flow.
+- [x] In e3dc-ess-modbus, make `async_detect()` close the station when setup fails.
+- [ ] Release e3dc-ess-modbus 0.1.1.
 - [ ] Sign the CLA if the bot asks.
 
 ## 5. Documentation pull request
 
-- [ ] Trim `docs/e3dc.markdown` to the first pull request: `ha_platforms: [sensor]`, no reconfiguration section, no binary sensor, number, switch or wallbox sections, and no examples that need them.
+- [x] Trim `docs/e3dc.markdown` to the first pull request: `ha_platforms: [sensor]`, no reconfiguration section, no binary sensor, number, switch or wallbox sections, and no examples that need them.
 - [x] Target 2026.12 with `ha_release`. The 2026.12 beta starts at the end of November, so the core pull request has to be merged before then. Otherwise, bump the release.
-- [ ] Open it against the `next` branch of home-assistant.io and link it from the core pull request.
+- [x] Open it against the `next` branch of home-assistant.io and link it from the core pull request: home-assistant/home-assistant.io#50091, as a draft.
 
 ## 6. Follow-up pull requests
 
