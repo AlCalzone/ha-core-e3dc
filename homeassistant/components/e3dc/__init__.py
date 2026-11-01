@@ -35,7 +35,7 @@ _PART_COUNTS = {
 }
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> None:
     """Set up E3/DC from a config entry."""
     try:
         unit = async_get_unit(hass, entry, create_modbus_params(entry.data), UNIT_ID)
@@ -94,7 +94,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool
     _async_remove_stale_devices(hass, entry)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    return True
 
 
 def _reported_parts(runtime_data: E3dcRuntimeData) -> dict[str, set[int]] | None:
@@ -176,9 +175,7 @@ async def async_remove_config_entry_device(
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: E3dcConfigEntry) -> None:
     """Unload a config entry and hand every held setpoint back."""
-    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        return False
+    await hass.config_entries.async_unload_platforms_or_raise(entry, PLATFORMS)
     await entry.runtime_data.holds.async_close()
-    return True
