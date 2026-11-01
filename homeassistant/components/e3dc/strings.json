@@ -230,9 +230,6 @@
     "feed_in_limit_inconsistent": {
       "message": "The feed-in limit was only partly written. The integration tried to write the previous limit back, if it knew one."
     },
-    "link_settings_in_use": {
-      "message": "The power station is already in use with other Modbus link settings: {error}"
-    },
     "modbus_error": {
       "message": "Error communicating with the power station."
     },
