@@ -29,10 +29,10 @@ script/install-into-core.sh ../core
 
 The script copies the integration and its tests into the checkout and adds it to `.strict-typing`. When the checkout has a `.venv`, it also regenerates the translations, `CODEOWNERS`, the generated config flow list, `mypy.ini` and `requirements_all.txt`.
 
-Until `e3dc-ess-modbus` is on PyPI, install it from git into core's venv:
+Install the library version the manifest pins into core's venv:
 
 ```bash
-uv pip install --python ../core/.venv/bin/python "e3dc-ess-modbus @ git+https://github.com/AlCalzone/e3dc-ess-modbus@main"
+uv pip install --python ../core/.venv/bin/python e3dc-ess-modbus==0.1.0
 ```
 
 Then run the tests from the core checkout:
@@ -43,8 +43,6 @@ Then run the tests from the core checkout:
 
 CI does the same against core's `dev` branch on every push and once a week.
 
-## Before submitting
+## Submission
 
-- Publish `e3dc-ess-modbus` 0.1.0 to PyPI. The manifest pins it.
-- Add the E3/DC brand to [home-assistant/brands](https://github.com/home-assistant/brands). Until then hassfest fails the `brands` rule of the Bronze tier, which every new integration has to reach. The brands repository already has `custom_integrations/e3dc`, added for [e3dc-homeassistant](https://github.com/JohannLegler/e3dc-homeassistant) in home-assistant/brands#9209. That folder has to be resolved with its owner before core can use the domain.
-- Open the documentation pull request on home-assistant.io with `docs/e3dc.markdown`.
+The first pull request, with the config flow and the power flow sensors, is home-assistant/core#189806. home-assistant/brands#11393 moves the brand images to `core_integrations`. TODO.md tracks what is left.
