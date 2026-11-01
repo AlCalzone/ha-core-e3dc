@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import timedelta
 import logging
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from e3dc_ess_modbus import E3dcPowerStation, NotAnE3dcError, UpdateReport
 from modbus_connection import ModbusError
@@ -52,8 +52,11 @@ class E3dcDataUpdateCoordinator(DataUpdateCoordinator[UpdateReport]):
     def device_info(self) -> dr.DeviceInfo:
         """Return device information."""
         identity = self.device.identity
+        serial = self.config_entry.unique_id
+        if TYPE_CHECKING:
+            assert serial is not None
         return dr.DeviceInfo(
-            identifiers={(DOMAIN, self.config_entry.unique_id or "")},
+            identifiers={(DOMAIN, serial)},
             manufacturer=identity.manufacturer or DEFAULT_NAME,
             model=identity.model or None,
             serial_number=identity.serial_number or None,
