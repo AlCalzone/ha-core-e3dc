@@ -1,0 +1,98 @@
+# Getting `e3dc` into Home Assistant core
+
+This repository holds the full integration. Core takes it in small pull requests: the first one has the config flow and one platform at the Bronze tier, and every later one adds one feature. The steps below follow [Creating your first integration](https://contributors.home-assistant.io/core/integrations/create/) and [Submitting a pull request](https://contributors.home-assistant.io/core/development/submitting/#new-integrations).
+
+## 1. Before anything is submitted
+
+- [x] Fix the tests against core `dev`. Core now rejects a boolean from `async_setup_entry` and `async_unload_entry` (home-assistant/core#187778), and its snapshots now show `device_id` and `config_subentry_id`.
+- [x] Add `timeout-minutes: 20` to the CI job. The run for `8988414` hung until GitHub cancelled it after 6 hours.
+- [ ] Commit both, and check that CI is green.
+- [x] Raise `homeassistant` in `hacs-e3dc/hacs.json` to `2026.11.0b0`. That is the first release with `async_unload_platforms_or_raise` (home-assistant/core#185989) and with `None` accepted from `async_setup_entry` (home-assistant/core#187778). 2026.10 treats `None` as a failed setup.
+- [ ] Move the `hacs-e3dc` test requirements to `homeassistant==2026.11.0` once `pytest-homeassistant-custom-component` has a release for it, then vendor the fix. Its latest release, 0.13.375, pins 2026.10.4. Core 2026.11 also pins `modbus-connection[tmodbus]==4.12.7` and `tmodbus==1.1.0`.
+- [ ] Ask in the [#core channel](https://discord.com/channels/330944238910963714/1475552721515053268) whether `e3dc` belongs in core. The guide wants a custom integration with a user base first, and `hacs-e3dc` has no release yet.
+- [x] Test against a real power station.
+- [x] Remove the "not tested on real hardware" notes from the library README and from this repository's README.
+
+## 2. Publish `e3dc-ess-modbus` 0.1.0
+
+The [dependency-transparency](https://contributors.home-assistant.io/core/quality-scale/dependency-transparency/) rule wants an OSI license, a PyPI release built by public CI, and a git tag for every PyPI version. The repository has the Apache 2.0 license and `publish.yml` already. The `pypi` environment exists, with required reviewers and the `*.*.*` tag rule.
+
+- [ ] On PyPI, add a pending trusted publisher: project `e3dc-ess-modbus`, owner `AlCalzone`, repository `e3dc-ess-modbus`, workflow `publish.yml`, environment `pypi`.
+- [ ] Check that CI is green on `main`.
+- [ ] Draft a GitHub release with the tag `0.1.0` on `main`, and publish it.
+- [ ] Approve the `publish` job in the Actions tab.
+- [ ] Check that https://pypi.org/project/e3dc-ess-modbus/0.1.0/ exists.
+- [ ] Switch the CI here from the git install to `e3dc-ess-modbus==0.1.0`.
+- [ ] Set `dependency-transparency: done` in `quality_scale.yaml`.
+
+## 3. Brand images
+
+Brands live in [home-assistant/brands](https://github.com/home-assistant/brands), in `core_integrations/<domain>/`. The repository already has `custom_integrations/e3dc`, from home-assistant/brands#9209 for [e3dc-homeassistant](https://github.com/JohannLegler/e3dc-homeassistant). The brands README says a core domain takes precedence over a custom one, so this doesn't block the core domain.
+
+- [x] Keep the domain `e3dc`. Sofar was submitted as `sofar_modbus`, and @joostlek asked in review "why sofar_modbus, and why not sofar?" (home-assistant/core#179329). It was renamed to `sofar`.
+- [ ] Let @JohannLegler know that a core integration takes the `e3dc` domain, if it stays `e3dc`. Their custom integration would then override the core one for anyone who has it installed.
+- [ ] Open the brands pull request with `icon.png`, `icon@2x.png`, `logo.png` and `logo@2x.png` (and dark variants if needed) in `core_integrations/<domain>/`.
+- [ ] Set `brands: done` in `quality_scale.yaml` once it is merged. Until then hassfest fails the Bronze tier.
+
+## 4. First core pull request: config flow and sensors
+
+Scope: Bronze tier, one platform, nothing extra. Core reviewers close large first pull requests.
+
+Keep:
+
+- [ ] `manifest.json`, with `"quality_scale": "bronze"`.
+- [ ] `config_flow.py` with the user step only.
+- [ ] `__init__.py` with setup, the serial number check and unload. Only the sensor platform.
+- [ ] `coordinator.py` with the readings coordinator only.
+- [ ] `entity.py` with the base entity on the power station device only.
+- [ ] `sensor.py` with the `power` block only: PV, battery, house, grid, additional feeder and wallbox power, battery state of charge, autarky, self-consumption, and the emergency power status.
+- [ ] `strings.json` trimmed to the kept entities, errors and exceptions.
+- [ ] `quality_scale.yaml` with every Bronze rule `done` or `exempt`. Every higher rule goes back to `todo`, except the ones that are honestly `exempt`.
+- [ ] Tests: `test_config_flow.py`, `test_init.py`, `test_sensor.py` and the sensor snapshot. Full coverage of `config_flow.py`, the rest above 95 %.
+
+Leave out, for later pull requests:
+
+- `reconfigure` step, `diagnostics.py`, `icons.json` (unless a kept entity needs it).
+- The settings coordinator, `holds.py`, `number.py`, `switch.py`, `binary_sensor.py`.
+- Sensors from `battery_limits`, `grid_control`, `wide_power_meters` and `inverter_mode_control`.
+- Power meter, inverter and wallbox devices, adding them on the fly, and removing stale ones.
+
+Steps:
+
+- [ ] Branch from the latest core `dev`.
+- [ ] Copy the trimmed integration and tests into core.
+- [ ] Add the domain to `.strict-typing`.
+- [ ] Run `python3 -m script.hassfest` and `python3 -m script.gen_requirements_all`. They update `CODEOWNERS`, `homeassistant/generated/config_flows.py`, `homeassistant/generated/integrations.json`, `mypy.ini` and `requirements_all.txt`.
+- [ ] Run `python3 -m script.translations develop --integration e3dc`, then `uv run --no-sync pytest tests/components/e3dc`.
+- [ ] Run `uv run --no-sync prek run --all-files`.
+- [ ] Set the integration up in a running Home Assistant against the real power station.
+- [ ] Search the diff for `TODO`.
+- [ ] Open the pull request with the full template. Check "New integration". Explain what an E3/DC power station is. Link the library repository, the `publish.yml` workflow and the `0.1.0` tag, the brands pull request and the docs pull request.
+- [ ] Sign the CLA if the bot asks.
+
+## 5. Documentation pull request
+
+- [ ] Trim `docs/e3dc.markdown` to the first pull request: `ha_platforms: [sensor]`, no reconfiguration section, no binary sensor, number, switch or wallbox sections, and no examples that need them.
+- [x] Target 2026.12 with `ha_release`. The 2026.12 beta starts at the end of November, so the core pull request has to be merged before then. Otherwise, bump the release.
+- [ ] Open it against the `next` branch of home-assistant.io and link it from the core pull request.
+
+## 6. Follow-up pull requests
+
+One feature each, in roughly this order. Each one updates `quality_scale.yaml`, the docs page and the tests.
+
+- [ ] Remaining station sensors: battery limits, failsafe timeouts, inverter mode, SG Ready.
+- [ ] Binary sensors for the EMS status bits.
+- [ ] Power meter and inverter devices with their sensors.
+- [ ] Wallbox devices with sensors and switches, added when the power station reports them.
+- [ ] Stale device removal.
+- [ ] Reconfigure flow.
+- [ ] Diagnostics.
+- [ ] Remote control: the settings coordinator, setpoint holds, numbers and switches.
+- [ ] Raise the declared tier once its rules are all met.
+
+## 7. `hacs-e3dc` alongside
+
+- [ ] Keep config entry versions, unique IDs and device identifiers identical to core, so users can move to core without setting up again.
+- [ ] Once the library is on PyPI, decide whether to keep vendoring it or require `e3dc-ess-modbus==0.1.0` in the manifest.
+- [ ] Ship the brand icons inside the custom integration. Home Assistant 2026.3 and later read them from there ([Brands Proxy API](https://contributors.home-assistant.io/blog/2026/02/24/brands-proxy-api/)).
+- [ ] Once `e3dc` is in a core release, tell HACS users to remove the custom integration so the core one loads.
