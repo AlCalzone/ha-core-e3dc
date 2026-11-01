@@ -125,59 +125,23 @@
       "house_power": {
         "name": "House power"
       },
-      "inverter_active_power_l1": {
-        "name": "Active power L1"
+      "inverter_active_power": {
+        "name": "Active power {phase}"
       },
-      "inverter_active_power_l2": {
-        "name": "Active power L2"
+      "inverter_apparent_power": {
+        "name": "Apparent power {phase}"
       },
-      "inverter_active_power_l3": {
-        "name": "Active power L3"
+      "inverter_current": {
+        "name": "Current {phase}"
       },
-      "inverter_apparent_power_l1": {
-        "name": "Apparent power L1"
+      "inverter_dc_current": {
+        "name": "DC current {tracker}"
       },
-      "inverter_apparent_power_l2": {
-        "name": "Apparent power L2"
+      "inverter_dc_power": {
+        "name": "DC power {tracker}"
       },
-      "inverter_apparent_power_l3": {
-        "name": "Apparent power L3"
-      },
-      "inverter_current_l1": {
-        "name": "Current L1"
-      },
-      "inverter_current_l2": {
-        "name": "Current L2"
-      },
-      "inverter_current_l3": {
-        "name": "Current L3"
-      },
-      "inverter_dc_current_1": {
-        "name": "DC current 1"
-      },
-      "inverter_dc_current_2": {
-        "name": "DC current 2"
-      },
-      "inverter_dc_current_3": {
-        "name": "DC current 3"
-      },
-      "inverter_dc_power_1": {
-        "name": "DC power 1"
-      },
-      "inverter_dc_power_2": {
-        "name": "DC power 2"
-      },
-      "inverter_dc_power_3": {
-        "name": "DC power 3"
-      },
-      "inverter_dc_voltage_1": {
-        "name": "DC voltage 1"
-      },
-      "inverter_dc_voltage_2": {
-        "name": "DC voltage 2"
-      },
-      "inverter_dc_voltage_3": {
-        "name": "DC voltage 3"
+      "inverter_dc_voltage": {
+        "name": "DC voltage {tracker}"
       },
       "inverter_frequency": {
         "name": "Frequency"
@@ -189,38 +153,17 @@
           "normal": "Normal operation"
         }
       },
-      "inverter_reactive_power_l1": {
-        "name": "Reactive power L1"
+      "inverter_reactive_power": {
+        "name": "Reactive power {phase}"
       },
-      "inverter_reactive_power_l2": {
-        "name": "Reactive power L2"
-      },
-      "inverter_reactive_power_l3": {
-        "name": "Reactive power L3"
-      },
-      "inverter_voltage_l1": {
-        "name": "Voltage L1"
-      },
-      "inverter_voltage_l2": {
-        "name": "Voltage L2"
-      },
-      "inverter_voltage_l3": {
-        "name": "Voltage L3"
+      "inverter_voltage": {
+        "name": "Voltage {phase}"
       },
       "max_charge_power": {
         "name": "Maximum charge power"
       },
       "max_discharge_power": {
         "name": "Maximum discharge power"
-      },
-      "power_l1": {
-        "name": "Power L1"
-      },
-      "power_l2": {
-        "name": "Power L2"
-      },
-      "power_l3": {
-        "name": "Power L3"
       },
       "power_meter_type": {
         "name": "Meter type",
@@ -236,6 +179,9 @@
           "root": "Grid connection point",
           "wallbox": "Wallbox"
         }
+      },
+      "power_phase": {
+        "name": "Power {phase}"
       },
       "pv_power": {
         "name": "PV power"

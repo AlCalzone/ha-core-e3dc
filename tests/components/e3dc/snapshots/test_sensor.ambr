@@ -36,7 +36,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_active_power_l1',
+    'translation_key': 'inverter_active_power',
     'unique_id': 'S10-12345678912_inverter_0_active_power_l1',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -94,7 +94,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_active_power_l2',
+    'translation_key': 'inverter_active_power',
     'unique_id': 'S10-12345678912_inverter_0_active_power_l2',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -152,7 +152,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_active_power_l3',
+    'translation_key': 'inverter_active_power',
     'unique_id': 'S10-12345678912_inverter_0_active_power_l3',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -210,7 +210,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_apparent_power_l1',
+    'translation_key': 'inverter_apparent_power',
     'unique_id': 'S10-12345678912_inverter_0_apparent_power_l1',
     'unit_of_measurement': <UnitOfApparentPower.VOLT_AMPERE: 'VA'>,
   })
@@ -268,7 +268,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_apparent_power_l2',
+    'translation_key': 'inverter_apparent_power',
     'unique_id': 'S10-12345678912_inverter_0_apparent_power_l2',
     'unit_of_measurement': <UnitOfApparentPower.VOLT_AMPERE: 'VA'>,
   })
@@ -326,7 +326,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_apparent_power_l3',
+    'translation_key': 'inverter_apparent_power',
     'unique_id': 'S10-12345678912_inverter_0_apparent_power_l3',
     'unit_of_measurement': <UnitOfApparentPower.VOLT_AMPERE: 'VA'>,
   })
@@ -384,7 +384,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_current_l1',
+    'translation_key': 'inverter_current',
     'unique_id': 'S10-12345678912_inverter_0_current_l1',
     'unit_of_measurement': <UnitOfElectricCurrent.AMPERE: 'A'>,
   })
@@ -442,7 +442,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_current_l2',
+    'translation_key': 'inverter_current',
     'unique_id': 'S10-12345678912_inverter_0_current_l2',
     'unit_of_measurement': <UnitOfElectricCurrent.AMPERE: 'A'>,
   })
@@ -500,7 +500,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_current_l3',
+    'translation_key': 'inverter_current',
     'unique_id': 'S10-12345678912_inverter_0_current_l3',
     'unit_of_measurement': <UnitOfElectricCurrent.AMPERE: 'A'>,
   })
@@ -558,7 +558,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_current_1',
+    'translation_key': 'inverter_dc_current',
     'unique_id': 'S10-12345678912_inverter_0_dc_current_1',
     'unit_of_measurement': <UnitOfElectricCurrent.AMPERE: 'A'>,
   })
@@ -616,7 +616,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_current_2',
+    'translation_key': 'inverter_dc_current',
     'unique_id': 'S10-12345678912_inverter_0_dc_current_2',
     'unit_of_measurement': <UnitOfElectricCurrent.AMPERE: 'A'>,
   })
@@ -674,7 +674,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_current_3',
+    'translation_key': 'inverter_dc_current',
     'unique_id': 'S10-12345678912_inverter_0_dc_current_3',
     'unit_of_measurement': <UnitOfElectricCurrent.AMPERE: 'A'>,
   })
@@ -732,7 +732,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_power_1',
+    'translation_key': 'inverter_dc_power',
     'unique_id': 'S10-12345678912_inverter_0_dc_power_1',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -790,7 +790,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_power_2',
+    'translation_key': 'inverter_dc_power',
     'unique_id': 'S10-12345678912_inverter_0_dc_power_2',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -848,7 +848,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_power_3',
+    'translation_key': 'inverter_dc_power',
     'unique_id': 'S10-12345678912_inverter_0_dc_power_3',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -906,7 +906,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_voltage_1',
+    'translation_key': 'inverter_dc_voltage',
     'unique_id': 'S10-12345678912_inverter_0_dc_voltage_1',
     'unit_of_measurement': <UnitOfElectricPotential.VOLT: 'V'>,
   })
@@ -964,7 +964,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_voltage_2',
+    'translation_key': 'inverter_dc_voltage',
     'unique_id': 'S10-12345678912_inverter_0_dc_voltage_2',
     'unit_of_measurement': <UnitOfElectricPotential.VOLT: 'V'>,
   })
@@ -1022,7 +1022,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_dc_voltage_3',
+    'translation_key': 'inverter_dc_voltage',
     'unique_id': 'S10-12345678912_inverter_0_dc_voltage_3',
     'unit_of_measurement': <UnitOfElectricPotential.VOLT: 'V'>,
   })
@@ -1138,7 +1138,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_reactive_power_l1',
+    'translation_key': 'inverter_reactive_power',
     'unique_id': 'S10-12345678912_inverter_0_reactive_power_l1',
     'unit_of_measurement': <UnitOfReactivePower.VOLT_AMPERE_REACTIVE: 'var'>,
   })
@@ -1196,7 +1196,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_reactive_power_l2',
+    'translation_key': 'inverter_reactive_power',
     'unique_id': 'S10-12345678912_inverter_0_reactive_power_l2',
     'unit_of_measurement': <UnitOfReactivePower.VOLT_AMPERE_REACTIVE: 'var'>,
   })
@@ -1254,7 +1254,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_reactive_power_l3',
+    'translation_key': 'inverter_reactive_power',
     'unique_id': 'S10-12345678912_inverter_0_reactive_power_l3',
     'unit_of_measurement': <UnitOfReactivePower.VOLT_AMPERE_REACTIVE: 'var'>,
   })
@@ -1312,7 +1312,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_voltage_l1',
+    'translation_key': 'inverter_voltage',
     'unique_id': 'S10-12345678912_inverter_0_voltage_l1',
     'unit_of_measurement': <UnitOfElectricPotential.VOLT: 'V'>,
   })
@@ -1370,7 +1370,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_voltage_l2',
+    'translation_key': 'inverter_voltage',
     'unique_id': 'S10-12345678912_inverter_0_voltage_l2',
     'unit_of_measurement': <UnitOfElectricPotential.VOLT: 'V'>,
   })
@@ -1428,7 +1428,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'inverter_voltage_l3',
+    'translation_key': 'inverter_voltage',
     'unique_id': 'S10-12345678912_inverter_0_voltage_l3',
     'unit_of_measurement': <UnitOfElectricPotential.VOLT: 'V'>,
   })
@@ -1620,7 +1620,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'power_l1',
+    'translation_key': 'power_phase',
     'unique_id': 'S10-12345678912_power_meter_0_power_l1',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -1678,7 +1678,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'power_l2',
+    'translation_key': 'power_phase',
     'unique_id': 'S10-12345678912_power_meter_0_power_l2',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
@@ -1736,7 +1736,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'power_l3',
+    'translation_key': 'power_phase',
     'unique_id': 'S10-12345678912_power_meter_0_power_l3',
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })

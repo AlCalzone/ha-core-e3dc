@@ -1,9 +1,9 @@
 """Support for E3/DC sensors."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from e3dc_ess_modbus import (
     E3dcPowerStation,
@@ -36,7 +36,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
-from .coordinator import E3dcConfigEntry, E3dcRuntimeData
+from .coordinator import E3dcConfigEntry
 from .entity import (
     E3dcEntity,
     E3dcEntityDescription,
@@ -278,7 +278,8 @@ def _power_meter_sensors(number: int) -> list[E3dcSensorDescription]:
     sensors.extend(
         E3dcSensorDescription(
             key=f"power_meter_{number}_power_{phase}",
-            translation_key=f"power_{phase}",
+            translation_key="power_phase",
+            translation_placeholders={"phase": phase.upper()},
             component="power_meters",
             part=part,
             device_class=SensorDeviceClass.POWER,
@@ -298,7 +299,8 @@ def _inverter_value(
     """Read ``attribute`` of inverter slot ``number``."""
 
     def _value(device: E3dcPowerStation) -> StateType:
-        assert device.inverters is not None
+        if TYPE_CHECKING:
+            assert device.inverters is not None
         inverter: Inverter = device.inverters[number]
         value: StateType = getattr(inverter, attribute)
         return value
@@ -311,6 +313,8 @@ class _InverterMeasurement:
     """One measurement every inverter repeats, before it gets a number."""
 
     key: str
+    translation_key: str
+    translation_placeholders: Mapping[str, str] | None = None
     device_class: SensorDeviceClass
     native_unit_of_measurement: str
     suggested_display_precision: int | None = None
@@ -321,6 +325,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"active_power_{phase}",
+            translation_key="inverter_active_power",
+            translation_placeholders={"phase": phase.upper()},
             device_class=SensorDeviceClass.POWER,
             native_unit_of_measurement=UnitOfPower.WATT,
             enabled_default=True,
@@ -330,6 +336,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"apparent_power_{phase}",
+            translation_key="inverter_apparent_power",
+            translation_placeholders={"phase": phase.upper()},
             device_class=SensorDeviceClass.APPARENT_POWER,
             native_unit_of_measurement=UnitOfApparentPower.VOLT_AMPERE,
         )
@@ -338,6 +346,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"reactive_power_{phase}",
+            translation_key="inverter_reactive_power",
+            translation_placeholders={"phase": phase.upper()},
             device_class=SensorDeviceClass.REACTIVE_POWER,
             native_unit_of_measurement=UnitOfReactivePower.VOLT_AMPERE_REACTIVE,
         )
@@ -346,6 +356,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"voltage_{phase}",
+            translation_key="inverter_voltage",
+            translation_placeholders={"phase": phase.upper()},
             device_class=SensorDeviceClass.VOLTAGE,
             native_unit_of_measurement=UnitOfElectricPotential.VOLT,
             suggested_display_precision=1,
@@ -355,6 +367,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"current_{phase}",
+            translation_key="inverter_current",
+            translation_placeholders={"phase": phase.upper()},
             device_class=SensorDeviceClass.CURRENT,
             native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
             suggested_display_precision=2,
@@ -363,6 +377,7 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     ),
     _InverterMeasurement(
         key="frequency",
+        translation_key="inverter_frequency",
         device_class=SensorDeviceClass.FREQUENCY,
         native_unit_of_measurement=UnitOfFrequency.HERTZ,
         suggested_display_precision=2,
@@ -370,6 +385,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"dc_power_{tracker}",
+            translation_key="inverter_dc_power",
+            translation_placeholders={"tracker": str(tracker)},
             device_class=SensorDeviceClass.POWER,
             native_unit_of_measurement=UnitOfPower.WATT,
             enabled_default=True,
@@ -379,6 +396,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"dc_voltage_{tracker}",
+            translation_key="inverter_dc_voltage",
+            translation_placeholders={"tracker": str(tracker)},
             device_class=SensorDeviceClass.VOLTAGE,
             native_unit_of_measurement=UnitOfElectricPotential.VOLT,
             suggested_display_precision=1,
@@ -388,6 +407,8 @@ _INVERTER_MEASUREMENTS: tuple[_InverterMeasurement, ...] = (
     *(
         _InverterMeasurement(
             key=f"dc_current_{tracker}",
+            translation_key="inverter_dc_current",
+            translation_placeholders={"tracker": str(tracker)},
             device_class=SensorDeviceClass.CURRENT,
             native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
             suggested_display_precision=2,
@@ -402,7 +423,8 @@ def _inverter_sensors(number: int) -> list[E3dcSensorDescription]:
     return [
         E3dcSensorDescription(
             key=f"inverter_{number}_{measurement.key}",
-            translation_key=f"inverter_{measurement.key}",
+            translation_key=measurement.translation_key,
+            translation_placeholders=measurement.translation_placeholders,
             component="inverters",
             part=("inverter", number),
             device_class=measurement.device_class,
@@ -423,12 +445,6 @@ def _sum(values: tuple[int | None, ...]) -> int | None:
     return sum(value for value in values if value is not None)
 
 
-def _descriptions(runtime_data: E3dcRuntimeData) -> list[E3dcSensorDescription]:
-    """Every sensor this power station serves."""
-    served = runtime_data.served_components
-    return [d for d in STATION_SENSORS if d.component in served]
-
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: E3dcConfigEntry,
@@ -436,9 +452,11 @@ async def async_setup_entry(
 ) -> None:
     """Set up the E3/DC sensor platform."""
     runtime_data = entry.runtime_data
+    served = runtime_data.served_components
     async_add_entities(
         E3dcSensor(runtime_data, description)
-        for description in _descriptions(runtime_data)
+        for description in STATION_SENSORS
+        if description.component in served
     )
     async_add_part_entities(
         entry,
