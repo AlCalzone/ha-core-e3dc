@@ -39,7 +39,7 @@ async def test_setup_and_unload(
     init_integration: MockConfigEntry,
     mock_get_unit: MagicMock,
 ) -> None:
-    """Test the entry sets up over a unit from modbus and unloads."""
+    """Test the entry connects through the modbus integration, sets up and unloads."""
     assert init_integration.state is ConfigEntryState.LOADED
     mock_get_unit.assert_called_once_with(
         hass,
@@ -77,7 +77,7 @@ async def test_setup_retries_when_unreachable(
     mock_get_unit: MagicMock,
     mock_unit: MockModbusUnit,
 ) -> None:
-    """Test an unreachable power station retries setup."""
+    """Test setup is retried while the power station does not answer."""
     mock_unit.fail_requests(ModbusConnectionError())
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
@@ -91,7 +91,8 @@ async def test_setup_fails_when_not_e3dc(
     mock_get_unit: MagicMock,
     mock_unit: MockModbusUnit,
 ) -> None:
-    """Test a device switched to SunSpec mode fails setup for good."""
+    """Test setup fails without retry after the power station is switched to SunSpec mode."""
+    # SunSpec mode replaces the E3/DC marker in register 40001 with "Su"
     seed(mock_unit, {40001: 0x5375})
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
@@ -124,13 +125,13 @@ async def test_failed_component_goes_unavailable(
 
 
 @pytest.mark.parametrize("platforms", [[Platform.SENSOR]])
-async def test_dead_link_makes_everything_unavailable(
+async def test_lost_connection_makes_sensors_unavailable(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
     init_integration: MockConfigEntry,
     mock_unit: MockModbusUnit,
 ) -> None:
-    """Test a dropped link marks the power station unavailable until it answers."""
+    """Test the sensors are unavailable while the connection to the power station is down."""
     mock_unit.fail_requests(ModbusConnectionError())
     await _poll(hass, freezer)
 
@@ -258,10 +259,10 @@ async def test_inverter_added_when_it_connects(
     assert hass.states.get("sensor.inverter_1_active_power_l1").state == "1200"
 
 
-async def test_setup_fails_when_the_link_is_held_with_other_settings(
+async def test_setup_fails_when_connection_is_in_use(
     hass: HomeAssistant, mock_config_entry: MockConfigEntry
 ) -> None:
-    """Test a shared link held with other settings fails setup for good."""
+    """Test setup fails with the modbus error when another integration uses the address with other settings."""
     mock_config_entry.add_to_hass(hass)
     placeholders = {
         "endpoint": "192.168.1.100:502",
@@ -284,13 +285,14 @@ async def test_setup_fails_when_the_link_is_held_with_other_settings(
     assert mock_config_entry.error_reason_translation_placeholders == placeholders
 
 
-async def test_setup_fails_for_another_power_station(
+async def test_setup_fails_for_a_different_power_station(
     hass: HomeAssistant,
     mock_config_entry: MockConfigEntry,
     mock_get_unit: MagicMock,
     mock_unit: MockModbusUnit,
 ) -> None:
-    """Test setup refuses a power station with another serial number."""
+    """Test setup fails when a different power station answers at the configured address."""
+    # The config flow stored the serial number of the station it found as the unique ID
     seed_identity(mock_unit, serial="S10-99999999999")
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
