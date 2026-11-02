@@ -8,8 +8,7 @@ This repository holds the full integration. Core takes it in small pull requests
 - [x] Add `timeout-minutes: 20` to the CI job. The run for `8988414` hung until GitHub cancelled it after 6 hours.
 - [ ] Commit both, and check that CI is green.
 - [x] Raise `homeassistant` in `hacs-e3dc/hacs.json` to `2026.11.0b0`. That is the first release with `async_unload_platforms_or_raise` (home-assistant/core#185989) and with `None` accepted from `async_setup_entry` (home-assistant/core#187778). 2026.10 treats `None` as a failed setup.
-- [ ] Move the `hacs-e3dc` test requirements to `homeassistant==2026.11.0` once `pytest-homeassistant-custom-component` has a release for it, then vendor the fix. Its latest release, 0.13.375, pins 2026.10.4. Core 2026.11 also pins `modbus-connection[tmodbus]==4.12.7` and `tmodbus==1.1.0`.
-- [ ] Ask in the [#core channel](https://discord.com/channels/330944238910963714/1475552721515053268) whether `e3dc` belongs in core. The guide wants a custom integration with a user base first, and `hacs-e3dc` has no release yet.
+- [ ] Ask in the [#core channel](https://discord.com/channels/330944238910963714/1475552721515053268) whether `e3dc` belongs in core. The guide wants a custom integration with a user base first. `e3dc` goes straight to core, with no custom integration release.
 - [x] Test against a real power station.
 - [x] Remove the "not tested on real hardware" notes from the library README and from this repository's README.
 
@@ -74,7 +73,7 @@ Steps:
 - [ ] Mark the core, docs and brands pull requests ready for review.
 - [x] Port the review fixes from home-assistant/core#189806 here: close the station after a failed probe in the config flow.
 - [x] In e3dc-ess-modbus, make `async_detect()` close the station when setup fails.
-- [ ] Release e3dc-ess-modbus 0.1.1.
+- [ ] Release e3dc-ess-modbus 0.1.1 with the next library change a follow-up pull request needs. Nothing here calls `async_detect()`, so the fix alone does not need a release.
 - [ ] Sign the CLA if the bot asks.
 
 ## 5. Documentation pull request
@@ -96,10 +95,3 @@ One feature each, in roughly this order. Each one updates `quality_scale.yaml`, 
 - [ ] Diagnostics.
 - [ ] Remote control: the settings coordinator, setpoint holds, numbers and switches.
 - [ ] Raise the declared tier once its rules are all met.
-
-## 7. `hacs-e3dc` alongside
-
-- [ ] Keep config entry versions, unique IDs and device identifiers identical to core, so users can move to core without setting up again.
-- [ ] Once the library is on PyPI, decide whether to keep vendoring it or require `e3dc-ess-modbus==0.1.0` in the manifest.
-- [ ] Ship the brand icons inside the custom integration. Home Assistant 2026.3 and later read them from there ([Brands Proxy API](https://contributors.home-assistant.io/blog/2026/02/24/brands-proxy-api/)).
-- [ ] Once `e3dc` is in a core release, tell HACS users to remove the custom integration so the core one loads.
