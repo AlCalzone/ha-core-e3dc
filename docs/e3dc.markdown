@@ -186,9 +186,23 @@ If one block of registers fails to read, only the entities from that block becom
 
 ## Known limitations
 
-- The power station has no energy counters over Modbus. To use it on the Energy dashboard, create [Integral](/integrations/integration/) helpers from the power sensors.
+- The power station has no energy counters over Modbus. The Energy dashboard needs energy sensors, so you build them from the power sensors with helpers.
 - The manual names the wallbox control bits, but which ones work depends on the wallbox model.
 - A setpoint is held while Home Assistant runs. When Home Assistant stops, or when you reload or disable the integration, it hands every setpoint back, giving up after about 5 seconds on an unresponsive power station. If that fails, the switch shows off anyway. The battery power and the feed-in limit lapse within 30 seconds. The active power limit lasts for the active power failsafe timeout, after which the active power failsafe value applies. With a failsafe timeout of 0, it lasts until it is written again. After a restart, turn the setpoint's switch on again.
+
+### Energy dashboard
+
+**PV power** and **House power** are never negative. Create an [Integral](/integrations/integration/) helper from each of them. Set the metric prefix to **k** and the time unit to **Hours**, so the helper counts kWh.
+
+**Grid power** and **Battery power** change sign with the direction of the flow. The Energy dashboard needs a separate counter for each direction, so split each sensor in two first:
+
+1. Create a [Template](/integrations/template/) sensor helper for each direction. Set the unit to **W**, the device class to **Power** and the state class to **Measurement**. Replace the entity IDs with those of your power station.
+   - Grid import: {% raw %}`{{ max(states('sensor.e3dc_s10_x_grid_power') | float(0), 0) }}`{% endraw %}
+   - Grid export: {% raw %}`{{ max(-(states('sensor.e3dc_s10_x_grid_power') | float(0)), 0) }}`{% endraw %}
+   - Battery charging: {% raw %}`{{ max(states('sensor.e3dc_s10_x_battery_power') | float(0), 0) }}`{% endraw %}
+   - Battery discharging: {% raw %}`{{ max(-(states('sensor.e3dc_s10_x_battery_power') | float(0)), 0) }}`{% endraw %}
+2. Create an Integral helper from each template sensor, with the metric prefix **k** and the time unit **Hours**.
+3. In the Energy dashboard settings, add the grid import and export energy under **Electricity grid**, the PV energy under **Solar panels**, and the battery charging and discharging energy under **Home battery storage**.
 
 ## Troubleshooting
 
