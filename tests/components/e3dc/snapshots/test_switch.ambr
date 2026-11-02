@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_all_entities[switch.s10_x_active_power_limit_control-entry]
+# name: test_all_entities[switch.e3_dc_s10_x_active_power_limit_control-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -13,7 +13,7 @@
     'disabled_by': None,
     'domain': 'switch',
     'entity_category': None,
-    'entity_id': 'switch.s10_x_active_power_limit_control',
+    'entity_id': 'switch.e3_dc_s10_x_active_power_limit_control',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -36,20 +36,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[switch.s10_x_active_power_limit_control-state]
+# name: test_all_entities[switch.e3_dc_s10_x_active_power_limit_control-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Active power limit control',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Active power limit control',
     }),
     'context': <ANY>,
-    'entity_id': 'switch.s10_x_active_power_limit_control',
+    'entity_id': 'switch.e3_dc_s10_x_active_power_limit_control',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'off',
   })
 # ---
-# name: test_all_entities[switch.s10_x_battery_power_control-entry]
+# name: test_all_entities[switch.e3_dc_s10_x_battery_power_control-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -63,7 +63,7 @@
     'disabled_by': None,
     'domain': 'switch',
     'entity_category': None,
-    'entity_id': 'switch.s10_x_battery_power_control',
+    'entity_id': 'switch.e3_dc_s10_x_battery_power_control',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -86,20 +86,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[switch.s10_x_battery_power_control-state]
+# name: test_all_entities[switch.e3_dc_s10_x_battery_power_control-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Battery power control',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Battery power control',
     }),
     'context': <ANY>,
-    'entity_id': 'switch.s10_x_battery_power_control',
+    'entity_id': 'switch.e3_dc_s10_x_battery_power_control',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'off',
   })
 # ---
-# name: test_all_entities[switch.s10_x_feed_in_limit_control-entry]
+# name: test_all_entities[switch.e3_dc_s10_x_feed_in_limit_control-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -113,7 +113,7 @@
     'disabled_by': None,
     'domain': 'switch',
     'entity_category': None,
-    'entity_id': 'switch.s10_x_feed_in_limit_control',
+    'entity_id': 'switch.e3_dc_s10_x_feed_in_limit_control',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -136,13 +136,13 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[switch.s10_x_feed_in_limit_control-state]
+# name: test_all_entities[switch.e3_dc_s10_x_feed_in_limit_control-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Feed-in limit control',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Feed-in limit control',
     }),
     'context': <ANY>,
-    'entity_id': 'switch.s10_x_feed_in_limit_control',
+    'entity_id': 'switch.e3_dc_s10_x_feed_in_limit_control',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

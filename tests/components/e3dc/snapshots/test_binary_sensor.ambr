@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_all_entities[binary_sensor.s10_x_charging_locked-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_charging_locked-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -13,7 +13,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_charging_locked',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_charging_locked',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -36,20 +36,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_charging_locked-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_charging_locked-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Charging locked',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Charging locked',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_charging_locked',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_charging_locked',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'off',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_charging_lockout_period-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_charging_lockout_period-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -63,7 +63,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_charging_lockout_period',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_charging_lockout_period',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -86,20 +86,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_charging_lockout_period-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_charging_lockout_period-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Charging lockout period',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Charging lockout period',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_charging_lockout_period',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_charging_lockout_period',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'off',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_discharging_locked-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_discharging_locked-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -113,7 +113,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_discharging_locked',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_discharging_locked',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -136,20 +136,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_discharging_locked-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_discharging_locked-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Discharging locked',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Discharging locked',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_discharging_locked',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_discharging_locked',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'off',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_discharging_lockout_period-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_discharging_lockout_period-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -163,7 +163,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_discharging_lockout_period',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_discharging_lockout_period',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -186,20 +186,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_discharging_lockout_period-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_discharging_lockout_period-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Discharging lockout period',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Discharging lockout period',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_discharging_lockout_period',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_discharging_lockout_period',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'off',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_emergency_power_ready-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_emergency_power_ready-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -213,7 +213,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_emergency_power_ready',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_emergency_power_ready',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -236,20 +236,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_emergency_power_ready-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_emergency_power_ready-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Emergency power ready',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Emergency power ready',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_emergency_power_ready',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_emergency_power_ready',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'on',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_feed_in_limited-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_feed_in_limited-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -263,7 +263,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_feed_in_limited',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_feed_in_limited',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -286,20 +286,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_feed_in_limited-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_feed_in_limited-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Feed-in limited',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Feed-in limited',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_feed_in_limited',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_feed_in_limited',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
-    'state': 'on',
+    'state': 'off',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_power_output_ready-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_power_output_ready-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -313,7 +313,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
-    'entity_id': 'binary_sensor.s10_x_power_output_ready',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_power_output_ready',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -336,20 +336,20 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_power_output_ready-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_power_output_ready-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Power output ready',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Power output ready',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_power_output_ready',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_power_output_ready',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'on',
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_weather_based_charging-entry]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_weather_based_charging-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -363,7 +363,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.s10_x_weather_based_charging',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_weather_based_charging',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -386,13 +386,13 @@
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.s10_x_weather_based_charging-state]
+# name: test_all_entities[binary_sensor.e3_dc_s10_x_weather_based_charging-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Weather-based charging',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Weather-based charging',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.s10_x_weather_based_charging',
+    'entity_id': 'binary_sensor.e3_dc_s10_x_weather_based_charging',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

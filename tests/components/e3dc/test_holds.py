@@ -41,12 +41,12 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant, State
 from homeassistant.exceptions import HomeAssistantError
 
-BATTERY_POWER = "number.s10_x_battery_power_setpoint"
-BATTERY_CONTROL = "switch.s10_x_battery_power_control"
-FEED_IN_LIMIT = "number.s10_x_feed_in_limit_setpoint"
-FEED_IN_CONTROL = "switch.s10_x_feed_in_limit_control"
-ACTIVE_POWER_LIMIT = "number.s10_x_active_power_limit_setpoint"
-ACTIVE_POWER_CONTROL = "switch.s10_x_active_power_limit_control"
+BATTERY_POWER = "number.e3_dc_s10_x_battery_power_setpoint"
+BATTERY_CONTROL = "switch.e3_dc_s10_x_battery_power_control"
+FEED_IN_LIMIT = "number.e3_dc_s10_x_feed_in_limit_setpoint"
+FEED_IN_CONTROL = "switch.e3_dc_s10_x_feed_in_limit_control"
+ACTIVE_POWER_LIMIT = "number.e3_dc_s10_x_active_power_limit_setpoint"
+ACTIVE_POWER_CONTROL = "switch.e3_dc_s10_x_active_power_limit_control"
 
 
 @pytest.fixture

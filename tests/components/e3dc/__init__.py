@@ -7,6 +7,7 @@ from homeassistant.const import CONF_HOST, CONF_PORT
 
 MOCK_SERIAL = "S10-12345678912"
 MOCK_MODEL = "S10 X"
+MOCK_TITLE = f"E3/DC {MOCK_MODEL}"
 MOCK_FIRMWARE = "S10_2026_04"
 
 MOCK_ENTRY_DATA = {CONF_HOST: "192.168.1.100", CONF_PORT: 502}
@@ -54,29 +55,35 @@ def seed_power_station(unit: MockModbusUnit) -> None:
     seed(
         unit,
         {
+            # PV and the additional feeder supply what the battery, house, wallbox
+            # and grid take
             40068: int32_words(5321),  # PV power
-            40070: int32_words(-1200),  # Battery power, discharging
+            40070: int32_words(1200),  # Battery power, charging
             40072: int32_words(870),  # House power
             40074: int32_words(-600),  # Grid power, feeding in
-            40078: int32_words(11000),  # Wallbox power
-            40080: int32_words(4200),  # Wallbox solar power
-            40082: 6738,  # Self-sufficiency 26 % (high byte), self-consumption 82 %
+            40076: int32_words(300),  # Additional feeder power
+            40078: int32_words(2951),  # Wallbox power
+            40080: int32_words(2951),  # Wallbox solar power
+            40082: (100 << 8) | 89,  # Self-sufficiency 100 %, self-consumption 89 %
             40083: 87,  # Battery state of charge, in %
             40084: 2,  # Emergency power not active
-            40085: 0b0010100,  # EMS status: emergency power ready, feed-in limited
+            40085: 0b0000100,  # EMS status: emergency power ready
             40088: 0b0000000111011,  # Wallbox 0: solar, charging, plugged, locked
             40096: 612,  # DC string 1 voltage, in V
+            40097: 598,  # DC string 2 voltage, in V
             40099: 450,  # DC string 1 current, in 0.01 A
+            40100: 429,  # DC string 2 current, in 0.01 A
             40102: 2754,  # DC string 1 power, in W
+            40103: 2567,  # DC string 2 power, in W
             40105: 1,  # Meter 0 type: root
-            40106: 0xFF38,  # Meter 0 power L1, -200 W
-            40107: 150,  # Meter 0 power L2, in W
-            40108: 100,  # Meter 0 power L3, in W
+            40106: 0xFED4,  # Meter 0 power L1, -300 W
+            40107: 0xFF38,  # Meter 0 power L2, -200 W
+            40108: 0xFF9C,  # Meter 0 power L3, -100 W
             40109: 6,  # Meter 1 type: not used
             40137: 1,  # SG Ready status
-            40138: int32_words(-200),  # Meter 0 power L1, 32 bit
-            40140: int32_words(150),  # Meter 0 power L2, 32 bit
-            40142: int32_words(100),  # Meter 0 power L3, 32 bit
+            40138: int32_words(-300),  # Meter 0 power L1, 32 bit
+            40140: int32_words(-200),  # Meter 0 power L2, 32 bit
+            40142: int32_words(-100),  # Meter 0 power L3, 32 bit
             40186: int32_words(5000),  # Feed-in limit, in W
             40188: 1,  # Power output ready
             40194: 30,  # Active power failsafe timeout, in s
@@ -84,7 +91,7 @@ def seed_power_station(unit: MockModbusUnit) -> None:
             40201: 0,  # Inverter mode: normal
             40202: int32_words(9000),  # Battery max charge power, in W
             40204: int32_words(-9000),  # Battery max discharge power, in W
-            40206: int32_words(7800),  # Battery remaining energy, in Wh
+            40206: int32_words(9135),  # Battery remaining energy, in Wh
             40208: int32_words(10500),  # Battery full charge energy, in Wh
             41006: int32_words(1750),  # Inverter 0 active power L1, in W
             41018: 2301,  # Inverter 0 voltage L1, in 0.1 V

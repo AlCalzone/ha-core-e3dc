@@ -197,10 +197,10 @@ If one block of registers fails to read, only the entities from that block becom
 **Grid power** and **Battery power** change sign with the direction of the flow. The Energy dashboard needs a separate counter for each direction, so split each sensor in two first:
 
 1. Create a [Template](/integrations/template/) sensor helper for each direction. Set the unit to **W**, the device class to **Power** and the state class to **Measurement**. Replace the entity IDs with those of your power station.
-   - Grid import: {% raw %}`{{ max(states('sensor.e3dc_s10_x_grid_power') | float(0), 0) }}`{% endraw %}
-   - Grid export: {% raw %}`{{ max(-(states('sensor.e3dc_s10_x_grid_power') | float(0)), 0) }}`{% endraw %}
-   - Battery charging: {% raw %}`{{ max(states('sensor.e3dc_s10_x_battery_power') | float(0), 0) }}`{% endraw %}
-   - Battery discharging: {% raw %}`{{ max(-(states('sensor.e3dc_s10_x_battery_power') | float(0)), 0) }}`{% endraw %}
+   - Grid import: {% raw %}`{{ max(states('sensor.e3_dc_s10_x_grid_power') | float(0), 0) }}`{% endraw %}
+   - Grid export: {% raw %}`{{ max(-(states('sensor.e3_dc_s10_x_grid_power') | float(0)), 0) }}`{% endraw %}
+   - Battery charging: {% raw %}`{{ max(states('sensor.e3_dc_s10_x_battery_power') | float(0), 0) }}`{% endraw %}
+   - Battery discharging: {% raw %}`{{ max(-(states('sensor.e3_dc_s10_x_battery_power') | float(0)), 0) }}`{% endraw %}
 2. Create an Integral helper from each template sensor, with the metric prefix **k** and the time unit **Hours**.
 3. In the Energy dashboard settings, add the grid import and export energy under **Electricity grid**, the PV energy under **Solar panels**, and the battery charging and discharging energy under **Home battery storage**.
 

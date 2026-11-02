@@ -116,12 +116,12 @@ async def test_failed_component_goes_unavailable(
     await _poll(hass, freezer)
 
     assert hass.states.get("sensor.power_meter_0_power").state == STATE_UNAVAILABLE
-    assert hass.states.get("sensor.s10_x_pv_power").state == "5321"
+    assert hass.states.get("sensor.e3_dc_s10_x_pv_power").state == "5321"
 
     mock_unit.fail_read(register(40105), None)
     await _poll(hass, freezer)
 
-    assert hass.states.get("sensor.power_meter_0_power").state == "50"
+    assert hass.states.get("sensor.power_meter_0_power").state == "-600"
 
 
 @pytest.mark.parametrize("platforms", [[Platform.SENSOR]])
@@ -135,12 +135,12 @@ async def test_lost_connection_makes_sensors_unavailable(
     mock_unit.fail_requests(ModbusConnectionError())
     await _poll(hass, freezer)
 
-    assert hass.states.get("sensor.s10_x_pv_power").state == STATE_UNAVAILABLE
+    assert hass.states.get("sensor.e3_dc_s10_x_pv_power").state == STATE_UNAVAILABLE
 
     mock_unit.fail_requests(None)
     await _poll(hass, freezer)
 
-    assert hass.states.get("sensor.s10_x_pv_power").state == "5321"
+    assert hass.states.get("sensor.e3_dc_s10_x_pv_power").state == "5321"
 
 
 @pytest.mark.parametrize("platforms", [[Platform.SENSOR]])
@@ -157,7 +157,7 @@ async def test_every_component_failing_marks_the_poll_failed(
 
     coordinator = init_integration.runtime_data.readings
     assert not coordinator.last_update_success
-    assert hass.states.get("sensor.s10_x_pv_power").state == STATE_UNAVAILABLE
+    assert hass.states.get("sensor.e3_dc_s10_x_pv_power").state == STATE_UNAVAILABLE
 
 
 @pytest.mark.parametrize("platforms", [[Platform.SWITCH]])

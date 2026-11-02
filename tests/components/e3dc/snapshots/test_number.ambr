@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_all_entities[number.s10_x_active_power_limit_setpoint-entry]
+# name: test_all_entities[number.e3_dc_s10_x_active_power_limit_setpoint-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -18,7 +18,7 @@
     'disabled_by': None,
     'domain': 'number',
     'entity_category': None,
-    'entity_id': 'number.s10_x_active_power_limit_setpoint',
+    'entity_id': 'number.e3_dc_s10_x_active_power_limit_setpoint',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -41,10 +41,10 @@
     'unit_of_measurement': '%',
   })
 # ---
-# name: test_all_entities[number.s10_x_active_power_limit_setpoint-state]
+# name: test_all_entities[number.e3_dc_s10_x_active_power_limit_setpoint-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Active power limit setpoint',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Active power limit setpoint',
       <NumberEntityCapabilityAttribute.MAX: 'max'>: 100,
       <NumberEntityCapabilityAttribute.MIN: 'min'>: 0,
       <NumberEntityCapabilityAttribute.MODE: 'mode'>: <NumberMode.BOX: 'box'>,
@@ -52,14 +52,14 @@
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '%',
     }),
     'context': <ANY>,
-    'entity_id': 'number.s10_x_active_power_limit_setpoint',
+    'entity_id': 'number.e3_dc_s10_x_active_power_limit_setpoint',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[number.s10_x_battery_power_setpoint-entry]
+# name: test_all_entities[number.e3_dc_s10_x_battery_power_setpoint-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -78,7 +78,7 @@
     'disabled_by': None,
     'domain': 'number',
     'entity_category': None,
-    'entity_id': 'number.s10_x_battery_power_setpoint',
+    'entity_id': 'number.e3_dc_s10_x_battery_power_setpoint',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -101,11 +101,11 @@
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
 # ---
-# name: test_all_entities[number.s10_x_battery_power_setpoint-state]
+# name: test_all_entities[number.e3_dc_s10_x_battery_power_setpoint-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Battery power setpoint',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Battery power setpoint',
       <NumberEntityCapabilityAttribute.MAX: 'max'>: 50000,
       <NumberEntityCapabilityAttribute.MIN: 'min'>: -50000,
       <NumberEntityCapabilityAttribute.MODE: 'mode'>: <NumberMode.BOX: 'box'>,
@@ -113,14 +113,14 @@
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfPower.WATT: 'W'>,
     }),
     'context': <ANY>,
-    'entity_id': 'number.s10_x_battery_power_setpoint',
+    'entity_id': 'number.e3_dc_s10_x_battery_power_setpoint',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[number.s10_x_feed_in_limit_setpoint-entry]
+# name: test_all_entities[number.e3_dc_s10_x_feed_in_limit_setpoint-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -139,7 +139,7 @@
     'disabled_by': None,
     'domain': 'number',
     'entity_category': None,
-    'entity_id': 'number.s10_x_feed_in_limit_setpoint',
+    'entity_id': 'number.e3_dc_s10_x_feed_in_limit_setpoint',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -162,11 +162,11 @@
     'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
   })
 # ---
-# name: test_all_entities[number.s10_x_feed_in_limit_setpoint-state]
+# name: test_all_entities[number.e3_dc_s10_x_feed_in_limit_setpoint-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'S10 X Feed-in limit setpoint',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'E3/DC S10 X Feed-in limit setpoint',
       <NumberEntityCapabilityAttribute.MAX: 'max'>: 100000,
       <NumberEntityCapabilityAttribute.MIN: 'min'>: 0,
       <NumberEntityCapabilityAttribute.MODE: 'mode'>: <NumberMode.BOX: 'box'>,
@@ -174,7 +174,7 @@
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfPower.WATT: 'W'>,
     }),
     'context': <ANY>,
-    'entity_id': 'number.s10_x_feed_in_limit_setpoint',
+    'entity_id': 'number.e3_dc_s10_x_feed_in_limit_setpoint',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

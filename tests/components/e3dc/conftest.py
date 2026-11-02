@@ -11,7 +11,7 @@ from homeassistant.components.e3dc.const import DOMAIN
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from . import MOCK_ENTRY_DATA, MOCK_MODEL, MOCK_SERIAL, seed_power_station
+from . import MOCK_ENTRY_DATA, MOCK_SERIAL, MOCK_TITLE, seed_power_station
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def mock_config_entry() -> MockConfigEntry:
         domain=DOMAIN,
         unique_id=MOCK_SERIAL,
         data=MOCK_ENTRY_DATA,
-        title=MOCK_MODEL,
+        title=MOCK_TITLE,
     )
 
 
@@ -78,6 +78,6 @@ async def init_integration(
     """Set up the E3/DC integration for testing."""
     mock_config_entry.add_to_hass(hass)
     with patch("homeassistant.components.e3dc.PLATFORMS", platforms):
-        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done(wait_background_tasks=True)
     return mock_config_entry
