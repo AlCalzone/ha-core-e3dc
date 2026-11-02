@@ -1,10 +1,9 @@
 ---
 title: E3/DC
 description: Instructions on how to integrate an E3/DC home power station with Home Assistant over Modbus TCP.
-ha_category:
-  - Energy
-  - Modbus-controlled
-ha_release: 2026.12
+ha_categories:
+  - energy.solar_batteries
+ha_release: "2026.12"
 ha_iot_class: Local Polling
 ha_codeowners:
   - '@AlCalzone'
@@ -27,7 +26,7 @@ The **E3/DC** {% term integration %} connects Home Assistant to an E3/DC home po
 - Seeing where your power goes. Solar production, battery charging and discharging, house consumption and grid import and export are all live sensors.
 - Charging the car from the sun. Switch an E3/DC wallbox between solar-only and hybrid charging, or pause charging, from an automation.
 - Charging the battery when power is cheap. With a dynamic tariff, an automation can charge the battery from the grid at night and stop when prices rise.
-- Noticing when backup power is not ready. The emergency power sensor shows whether the house would stay powered in a grid failure.
+- Noticing when backup power is not ready. The **Emergency power ready** binary sensor turns off when the power station could not supply the house in a grid failure.
 
 ## Supported devices
 
