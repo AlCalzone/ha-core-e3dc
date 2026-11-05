@@ -17,6 +17,7 @@ ha_platforms:
 ha_config_flow: true
 ha_integration_type: device
 ha_quality_scale: bronze
+ha_zeroconf: true
 ---
 
 The **E3/DC** {% term integration %} connects Home Assistant to an E3/DC home power station from HagerEnergy over Modbus TCP. It reads the power flows between solar, battery, house, grid and wallboxes, and lets you control wallboxes and the battery.
@@ -55,6 +56,8 @@ Port:
   description: "The Modbus TCP port set in the power station's Smart Home menu. The default is `502`."
 {% endconfiguration_basic %}
 
+A discovered power station is set up on the default port `502`. If you set a different port, add the integration manually.
+
 {% note %}
 Home Assistant can share a Modbus connection between integrations. Another integration that already talks to the same power station shares the connection instead of opening a second one.
 {% endnote %}
@@ -75,12 +78,16 @@ The integration reads the serial number again and accepts the new settings only 
 
 The power station device has these sensors:
 
-- **PV power**, **Battery power**, **House power**, **Grid power**, **Additional feeder power**, **Wallbox power** and **Wallbox solar power**, in watts. Battery power is positive while charging. Grid power is positive while importing and negative while feeding in.
+- **PV power**, **Battery power**, **House power** and **Grid power**, in watts. Battery power is positive while discharging and negative while charging. Grid power is positive while importing and negative while feeding in.
+- **Wallbox power** and **Wallbox solar power**, in watts, if a wallbox is configured.
+- **Additional feeder power**, in watts, if a power meter measures an additional feeder, such as a second PV inverter.
 - **Battery**: the battery's state of charge.
 - **Self-sufficiency** and **Self-consumption**, in percent.
-- **Emergency power**: whether emergency power is active, inactive, not available or not supported. On the S10 E and S10 E PRO, **Motor switch off** means the emergency power motor switch is not in its on position.
+- **Emergency power**, if the power station supports emergency power. It shows whether emergency power is active, inactive or not available. On the S10 E and S10 E PRO, **Motor switch off** means the emergency power motor switch is not in its on position.
 - **Stored energy**, **Battery capacity**, **Maximum charge power** and **Maximum discharge power**, on firmware 2026_04 and later, if the power station reports its battery capacity.
 - **Inverter mode**, the failsafe timeouts and the **SG Ready status**, as diagnostic sensors.
+
+The integration checks for a wallbox and an additional feeder when it starts. After you add either one, reload the integration to get its power sensors.
 
 Each configured power meter gets its own device with its type, its total power, and the power per phase, which is disabled by default. The power station's own inverter and each additional solar inverter also get a device with their power, voltage, current and frequency per phase, and the power, voltage and current of each DC tracker. Most inverter sensors are disabled by default.
 
@@ -198,8 +205,8 @@ If one block of registers fails to read, only the entities from that block becom
 1. Create a [Template](/integrations/template/) sensor helper for each direction. Set the unit to **W**, the device class to **Power** and the state class to **Measurement**. Replace the entity IDs with those of your power station.
    - Grid import: {% raw %}`{{ max(states('sensor.e3_dc_s10_x_grid_power') | float(0), 0) }}`{% endraw %}
    - Grid export: {% raw %}`{{ max(-(states('sensor.e3_dc_s10_x_grid_power') | float(0)), 0) }}`{% endraw %}
-   - Battery charging: {% raw %}`{{ max(states('sensor.e3_dc_s10_x_battery_power') | float(0), 0) }}`{% endraw %}
-   - Battery discharging: {% raw %}`{{ max(-(states('sensor.e3_dc_s10_x_battery_power') | float(0)), 0) }}`{% endraw %}
+   - Battery charging: {% raw %}`{{ max(-(states('sensor.e3_dc_s10_x_battery_power') | float(0)), 0) }}`{% endraw %}
+   - Battery discharging: {% raw %}`{{ max(states('sensor.e3_dc_s10_x_battery_power') | float(0), 0) }}`{% endraw %}
 2. Create an Integral helper from each template sensor, with the metric prefix **k** and the time unit **Hours**.
 3. In the Energy dashboard settings, add the grid import and export energy under **Electricity grid**, the PV energy under **Solar panels**, and the battery charging and discharging energy under **Home battery storage**.
 

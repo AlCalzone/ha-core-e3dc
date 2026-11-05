@@ -50,7 +50,7 @@ def seed_identity(
 
 
 def seed_power_station(unit: MockModbusUnit) -> None:
-    """Seed an S10 X with one wallbox, a root meter and every firmware block."""
+    """Seed an S10 X with one wallbox, a root meter, an additional feeder and every firmware block."""
     seed_identity(unit)
     seed(
         unit,
@@ -79,11 +79,17 @@ def seed_power_station(unit: MockModbusUnit) -> None:
             40106: 0xFED4,  # Meter 0 power L1, -300 W
             40107: 0xFF38,  # Meter 0 power L2, -200 W
             40108: 0xFF9C,  # Meter 0 power L3, -100 W
-            40109: 6,  # Meter 1 type: not used
+            40109: 2,  # Meter 1 type: additional feeder
+            40110: 100,  # Meter 1 power L1, in W
+            40111: 100,  # Meter 1 power L2, in W
+            40112: 100,  # Meter 1 power L3, in W
             40137: 1,  # SG Ready status
             40138: int32_words(-300),  # Meter 0 power L1, 32 bit
             40140: int32_words(-200),  # Meter 0 power L2, 32 bit
             40142: int32_words(-100),  # Meter 0 power L3, 32 bit
+            40144: int32_words(100),  # Meter 1 power L1, 32 bit
+            40146: int32_words(100),  # Meter 1 power L2, 32 bit
+            40148: int32_words(100),  # Meter 1 power L3, 32 bit
             40186: int32_words(5000),  # Feed-in limit, in W
             40188: 1,  # Power output ready
             40194: 30,  # Active power failsafe timeout, in s

@@ -32,7 +32,7 @@ Brands live in [home-assistant/brands](https://github.com/home-assistant/brands)
 - [ ] Let @JohannLegler know that a core integration takes the `e3dc` domain. Their custom integration overrides the core one for anyone who has it installed. After removing it, their entries fail core's serial number check, because their unique ID is the host, so users have to set them up again.
 - [x] Open the brands pull request: home-assistant/brands#11393 moves the 8 existing images from `custom_integrations/e3dc` to `core_integrations/e3dc`.
 - [x] Set `brands: done` in `quality_scale.yaml`, with the brands pull request linked from the core one.
-- [ ] Get home-assistant/brands#11393 merged.
+- [x] Get home-assistant/brands#11393 merged.
 
 ## 4. First core pull request: config flow and sensors
 
@@ -70,9 +70,11 @@ Steps:
 - [x] Open the pull request as a draft with the full template: home-assistant/core#189806, from `AlCalzone:add-e3dc-integration`. It links the library repository, the `publish.yml` workflow and the `0.1.0` tag.
 - [x] Link the brands pull request in its description, and set `brands: done`.
 - [x] Link the docs pull request in its description.
-- [ ] Mark the core, docs and brands pull requests ready for review.
+- [x] Mark the core, docs and brands pull requests ready for review.
 - [x] Port the review fixes from home-assistant/core#189806 here: close the station after a failed probe in the config flow.
 - [x] In e3dc-ess-modbus, make `async_detect()` close the station when setup fails.
+- [x] Port the later review changes here: zeroconf discovery, sensors only for installed hardware, battery power positive while discharging, and aborting discovery when the probe fails.
+- [x] Get home-assistant/core#189806 merged.
 - [ ] Release e3dc-ess-modbus 0.1.1 with the next library change a follow-up pull request needs. Nothing here calls `async_detect()`, so the fix alone does not need a release.
 - [ ] Sign the CLA if the bot asks.
 
@@ -81,6 +83,7 @@ Steps:
 - [x] Trim `docs/e3dc.markdown` to the first pull request: `ha_platforms: [sensor]`, no reconfiguration section, no binary sensor, number, switch or wallbox sections, and no examples that need them.
 - [x] Target 2026.12 with `ha_release`. The 2026.12 beta starts at the end of November, so the core pull request has to be merged before then. Otherwise, bump the release.
 - [x] Open it against the `next` branch of home-assistant.io and link it from the core pull request: home-assistant/home-assistant.io#50091, as a draft.
+- [ ] Get home-assistant/home-assistant.io#50091 merged.
 
 ## 6. Follow-up pull requests
 

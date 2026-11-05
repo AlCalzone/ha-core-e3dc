@@ -20,6 +20,12 @@
       None,
     ),
     tuple(
+      'Power meter 1',
+      None,
+      None,
+      None,
+    ),
+    tuple(
       'Wallbox 0',
       None,
       None,
