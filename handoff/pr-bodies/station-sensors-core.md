@@ -20,8 +20,6 @@
   additional information section.
 -->
 
-**Depends on home-assistant/core#190888**, which bumps `e3dc-ess-modbus` to 0.2.0. Merge that one first.
-
 This PR adds the E3/DC sensors that newer firmware serves. A sensor is only created when the power station serves its register block.
 
 - Battery limits (firmware 2026_04): **Maximum charge power**, **Maximum discharge power**, **Stored energy** and **Battery capacity**, if the station reports its battery capacity.
