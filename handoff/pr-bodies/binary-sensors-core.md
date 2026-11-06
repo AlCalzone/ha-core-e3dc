@@ -60,7 +60,7 @@ The tests turn on each bit of the register in turn and check that only its own b
 
 - This PR fixes or closes issue: fixes #
 - This PR is related to issue: 
-- Link to documentation pull request: 
+- Link to documentation pull request: home-assistant/home-assistant.io#50272
 - Link to contributors documentation pull request: 
 - Link to frontend pull request: 
 

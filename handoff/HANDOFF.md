@@ -12,7 +12,7 @@ Written on 2026-11-06. The goal is the full integration from this repository in 
 
 ## Follow-up branches
 
-All eight are pushed. No pull requests are open for them yet.
+All eight are pushed. The binary sensor pair is open as drafts: home-assistant/core#190858 and home-assistant/home-assistant.io#50272. The others have no pull requests yet.
 
 | Feature | Core branch on `AlCalzone/homeassistant-core` | Docs branch on `AlCalzone/home-assistant.io` | PR bodies in `handoff/pr-bodies/` |
 |---|---|---|---|
