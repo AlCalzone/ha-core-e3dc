@@ -12,7 +12,7 @@ Written on 2026-11-06. The goal is the full integration from this repository in 
 
 ## Follow-up branches
 
-All eight are pushed. Open pull requests: binary sensors as home-assistant/core#190858 and home-assistant/home-assistant.io#50272, reconfigure as home-assistant/core#190872 and home-assistant/home-assistant.io#50274, diagnostics as home-assistant/core#190876 and home-assistant/home-assistant.io#50275. Station sensors has no pull requests yet.
+All eight are pushed. Open pull requests: binary sensors as home-assistant/core#190858 and home-assistant/home-assistant.io#50272, reconfigure as home-assistant/core#190872 and home-assistant/home-assistant.io#50274, diagnostics as home-assistant/core#190876 and home-assistant/home-assistant.io#50275, station sensors as home-assistant/core#190878 and home-assistant/home-assistant.io#50276.
 
 | Feature | Core branch on `AlCalzone/homeassistant-core` | Docs branch on `AlCalzone/home-assistant.io` | PR bodies in `handoff/pr-bodies/` |
 |---|---|---|---|

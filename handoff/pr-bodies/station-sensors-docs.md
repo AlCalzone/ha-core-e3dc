@@ -38,7 +38,7 @@ This PR builds on https://github.com/home-assistant/home-assistant.io/pull/50091
     Please be sure to fill out additional details, if applicable.
 -->
 
-- Link to parent pull request in the codebase: 
+- Link to parent pull request in the codebase: home-assistant/core#190878
 - Link to parent pull request in the Brands repository: 
 - This PR fixes or closes issue: fixes #
 

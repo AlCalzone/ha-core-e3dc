@@ -29,6 +29,8 @@ This PR adds the remaining sensors of the E3/DC power station device. Newer firm
 
 All of them except **Stored energy** are diagnostic sensors. The SG Ready status and the two failsafe timeouts are disabled by default.
 
+The E3/DC manual documents no values for the SG Ready status register. The sensor maps them to the four states of the SG Ready standard: blocked, normal operation, switch-on recommended and forced on. Any other value shows as unknown. On a real power station with surplus solar power, the register reads 3, which is switch-on recommended.
+
 During setup, `e3dc-ess-modbus` probes which optional blocks the firmware serves and sets the others to `None`. The sensor platform creates a sensor only if its block is served, so older firmware gets none of these sensors.
 
 The coordinator reads the four blocks on its existing 5-second poll. A poll now sends 7 requests, up from 1. The library spaces requests by 100 ms. A poll takes about 0.7 seconds and stays well below the 10 requests per second the power station accepts. The failsafe timeouts change only when something writes them, so a slower interval would be enough for them. A separate settings coordinator would add code for two disabled-by-default sensors, so it waits for the remote control PR that needs it.
@@ -59,7 +61,7 @@ With this PR, `entity-category` and `entity-disabled-by-default` are done.
 
 - This PR fixes or closes issue: fixes #
 - This PR is related to issue: 
-- Link to documentation pull request: 
+- Link to documentation pull request: home-assistant/home-assistant.io#50276
 - Link to contributors documentation pull request: 
 - Link to frontend pull request: 
 
