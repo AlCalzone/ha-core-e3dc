@@ -27,7 +27,7 @@ The **E3/DC** {% term integration %} connects Home Assistant to an E3/DC home po
 - Seeing where your power goes. Solar production, battery charging and discharging, house consumption and grid import and export are all live sensors.
 - Charging the car from the sun. Switch an E3/DC wallbox between solar-only and hybrid charging, or pause charging, from an automation.
 - Charging the battery when power is cheap. With a dynamic tariff, an automation can charge the battery from the grid at night and stop when prices rise.
-- Noticing when backup power is not ready. The **Emergency power ready** binary sensor turns off when the power station could not supply the house in a grid failure.
+- Noticing when backup power is not ready. The **Emergency power ready** binary sensor shows whether the power station can switch to emergency power. How long it can then supply the house depends on the battery's charge, which the **Battery** sensor shows.
 
 ## Supported devices
 
