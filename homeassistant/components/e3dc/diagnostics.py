@@ -19,7 +19,13 @@ _SERIAL_NUMBER_REGISTERS = range(register(40036), register(40052))
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant, entry: E3dcConfigEntry
 ) -> dict[str, Any]:
-    """Return diagnostics for a config entry."""
+    """Return diagnostics for a config entry.
+
+    The raw registers can be loaded into ``modbus_connection.mock`` to replay a
+    problem without the power station. Their keys are Modbus addresses, which
+    are one lower than the register numbers in E3/DC's documentation. The serial
+    number registers are left out.
+    """
     runtime_data = entry.runtime_data
     device = runtime_data.device
     identity = device.identity
