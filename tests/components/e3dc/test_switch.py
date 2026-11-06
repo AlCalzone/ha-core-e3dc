@@ -21,7 +21,7 @@ from homeassistant.helpers import entity_registry as er
 
 @pytest.fixture
 def platforms() -> list[Platform]:
-    """Set up only the switch platform."""
+    """Fixture to specify platforms to test."""
     return [Platform.SWITCH]
 
 

@@ -51,7 +51,7 @@ ACTIVE_POWER_CONTROL = "switch.e3_dc_s10_x_active_power_limit_control"
 
 @pytest.fixture
 def platforms() -> list[Platform]:
-    """Set up the platforms with setpoint entities."""
+    """Fixture to specify platforms to test."""
     return [Platform.NUMBER, Platform.SWITCH]
 
 

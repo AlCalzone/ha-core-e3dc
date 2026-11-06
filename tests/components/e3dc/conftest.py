@@ -64,7 +64,7 @@ def mock_get_unit(mock_connection: MockModbusConnection) -> Generator[MagicMock]
 
 @pytest.fixture
 def platforms() -> list[Platform]:
-    """The platforms to set up; all of them unless a test narrows it."""
+    """Fixture to specify platforms to test."""
     return [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.SWITCH]
 
 

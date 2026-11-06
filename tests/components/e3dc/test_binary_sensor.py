@@ -11,7 +11,7 @@ from homeassistant.helpers import entity_registry as er
 
 @pytest.fixture
 def platforms() -> list[Platform]:
-    """Set up only the binary_sensor platform."""
+    """Fixture to specify platforms to test."""
     return [Platform.BINARY_SENSOR]
 
 
