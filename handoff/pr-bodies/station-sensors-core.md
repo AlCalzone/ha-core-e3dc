@@ -29,7 +29,7 @@ This PR adds the remaining sensors of the E3/DC power station device. They come 
 
 All of them except **Stored energy** are diagnostic sensors. The SG Ready status and the two failsafe timeouts are disabled by default.
 
-The E3/DC manual documents no values for the SG Ready status register. The sensor maps them to the four states of the SG Ready standard: blocked, normal operation, switch-on recommended and forced on. Any other value shows as unknown. On a real power station with surplus solar power, the register reads 3, which is switch-on recommended.
+The SG Ready status sensor shows the four states of the SG Ready standard: blocked, normal operation, switch-on recommended and forced on. Any other value shows as unknown. On a real power station with surplus solar power, it shows switch-on recommended.
 
 The integration only creates a sensor if the power station serves its block, so older firmware gets none of these sensors. The coordinator reads the new blocks on its existing 5-second poll.
 
