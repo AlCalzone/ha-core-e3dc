@@ -20,22 +20,16 @@
   additional information section.
 -->
 
-This PR adds the remaining sensors of the E3/DC power station device. They come from register blocks that newer firmware releases serve:
+**Depends on home-assistant/core#190888**, which bumps `e3dc-ess-modbus` to 0.2.0. Merge that one first.
 
-- Battery limits, from release 2026_04: **Maximum charge power**, **Maximum discharge power**, **Stored energy** and **Battery capacity**. They are only created when the power station reports its battery capacity.
-- 32-bit power meter values: **SG Ready status**.
-- Grid control, from release 2025_06: **Active power failsafe timeout** and **Reactive power failsafe timeout**.
-- Inverter mode control, from release 2025_43: **Inverter mode**.
+This PR adds the E3/DC sensors that newer firmware serves. A sensor is only created when the power station serves its register block.
 
-All of them except **Stored energy** are diagnostic sensors. The SG Ready status and the two failsafe timeouts are disabled by default.
+- Battery limits (firmware 2026_04): **Maximum charge power**, **Maximum discharge power**, **Stored energy** and **Battery capacity**, if the station reports its battery capacity.
+- **SG Ready status**: blocked, normal operation, switch-on recommended or forced on.
+- Grid control (firmware 2025_06): **Active power failsafe timeout** and **Reactive power failsafe timeout**.
+- Inverter mode control (firmware 2025_43): **Inverter mode**.
 
-The SG Ready status sensor shows the four states of the SG Ready standard: blocked, normal operation, switch-on recommended and forced on. Any other value shows as unknown. On a real power station with surplus solar power, it shows switch-on recommended.
-
-The integration only creates a sensor if the power station serves its block, so older firmware gets none of these sensors. The coordinator reads the new blocks on its existing 5-second poll.
-
-With this PR, `entity-category` and `entity-disabled-by-default` are done.
-
-This PR depends on home-assistant/core#190888, which bumps `e3dc-ess-modbus` to 0.2.0 for the SG Ready status. Until that one is merged, this PR also shows the bump. Release notes: https://github.com/AlCalzone/e3dc-ess-modbus/releases/tag/0.2.0, diff: https://github.com/AlCalzone/e3dc-ess-modbus/compare/0.1.0...0.2.0
+All but **Stored energy** are diagnostic. The SG Ready status and the failsafe timeouts are disabled by default. This completes `entity-category` and `entity-disabled-by-default`.
 
 ## Type of change
 <!--
