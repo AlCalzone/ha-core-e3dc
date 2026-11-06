@@ -65,7 +65,7 @@ Steps:
 - [x] Run `python3 -m script.hassfest` and `python3 -m script.gen_requirements_all`. They update `CODEOWNERS`, `homeassistant/generated/config_flows.py`, `homeassistant/generated/integrations.json`, `mypy.ini` and `requirements_all.txt`.
 - [x] Run `python3 -m script.translations develop --integration e3dc`, then `uv run --no-sync pytest tests/components/e3dc`.
 - [x] Run `uv run --no-sync prek run --all-files`.
-- [ ] Set the integration up in a running Home Assistant against the real power station.
+- [x] Set the integration up in a running Home Assistant against the real power station.
 - [x] Search the diff for `TODO`.
 - [x] Open the pull request as a draft with the full template: home-assistant/core#189806, from `AlCalzone:add-e3dc-integration`. It links the library repository, the `publish.yml` workflow and the `0.1.0` tag.
 - [x] Link the brands pull request in its description, and set `brands: done`.
@@ -87,7 +87,7 @@ Steps:
 
 ## 6. Follow-up pull requests
 
-One feature each, in roughly this order. Each one updates `quality_scale.yaml`, the docs page and the tests.
+One feature each, in roughly this order. Each one updates `quality_scale.yaml`, the docs page and the tests. `handoff/HANDOFF.md` has the state of the first four.
 
 - [ ] Remaining station sensors: battery limits, failsafe timeouts, inverter mode, SG Ready.
 - [ ] Binary sensors for the EMS status bits.
