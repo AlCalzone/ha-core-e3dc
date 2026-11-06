@@ -25,7 +25,7 @@ This PR adds the `binary_sensor` platform to the E3/DC integration. The power st
 - Charging locked
 - Discharging locked
 - Emergency power ready
-- Weather-based charging
+- Charging limited by forecast
 - Feed-in limited
 - Charging lockout period, disabled by default
 - Discharging lockout period, disabled by default

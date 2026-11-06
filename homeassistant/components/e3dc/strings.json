@@ -59,6 +59,9 @@
       "charge_lock_time": {
         "name": "Charging lockout period"
       },
+      "charging_limited_by_forecast": {
+        "name": "Charging limited by forecast"
+      },
       "charging_locked": {
         "name": "Charging locked"
       },
@@ -85,9 +88,6 @@
       },
       "type2_plugged": {
         "name": "Type 2 plug"
-      },
-      "weather_based_charging": {
-        "name": "Weather-based charging"
       }
     },
     "number": {
