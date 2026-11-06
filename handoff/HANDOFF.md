@@ -12,14 +12,14 @@ Written on 2026-11-06. The goal is the full integration from this repository in 
 
 ## Follow-up branches
 
-All eight are pushed. Open pull requests: binary sensors as home-assistant/core#190858 and home-assistant/home-assistant.io#50272, reconfigure as home-assistant/core#190872 and home-assistant/home-assistant.io#50274, diagnostics as home-assistant/core#190876 and home-assistant/home-assistant.io#50275, station sensors as home-assistant/core#190878 and home-assistant/home-assistant.io#50276.
+All eight are pushed. Open pull requests: binary sensors as home-assistant/core#190858 and home-assistant/home-assistant.io#50272, reconfigure as home-assistant/core#190872 and home-assistant/home-assistant.io#50274, diagnostics as home-assistant/core#190876 and home-assistant/home-assistant.io#50275, station sensors as home-assistant/core#190878 and home-assistant/home-assistant.io#50276. Station sensors depends on home-assistant/core#190888, which bumps `e3dc-ess-modbus` to 0.2.0 from `bump-e3dc-ess-modbus-to-0.2.0`. Once that one merges, merge `dev` into `e3dc-station-sensors`.
 
 | Feature | Core branch on `AlCalzone/homeassistant-core` | Docs branch on `AlCalzone/home-assistant.io` | PR bodies in `handoff/pr-bodies/` |
 |---|---|---|---|
 | Binary sensors | `e3dc-binary-sensors` at `c5eb6f5` | `e3dc-binary-sensors-docs` at `8ecaf48` | `binary-sensors-core.md`, `binary-sensors-docs.md` |
 | Reconfigure flow | `e3dc-reconfigure` at `21eb797` | `e3dc-reconfigure-docs` at `8a0a3ea` | `reconfigure-core.md`, `reconfigure-docs.md` |
 | Diagnostics | `e3dc-diagnostics` at `f5c70ee` | `e3dc-diagnostics-docs` at `3a98b5b` | `diagnostics-core.md`, `diagnostics-docs.md` |
-| Station sensors | `e3dc-station-sensors` at `446ab5c` | `e3dc-station-sensors-docs` at `58fa3d0` | `station-sensors-core.md`, `station-sensors-docs.md` |
+| Station sensors | `e3dc-station-sensors` at `f2e7699` | `e3dc-station-sensors-docs` at `58fa3d0` | `station-sensors-core.md`, `station-sensors-docs.md` |
 
 The core branches start from core `dev` after the merge of #189806. The docs branches start from `e3dc-docs`, because #50091 isn't merged yet.
 
