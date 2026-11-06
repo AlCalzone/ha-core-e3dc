@@ -20,9 +20,9 @@
   additional information section.
 -->
 
-This PR adds the remaining sensors of the E3/DC power station device. Newer firmware releases serve these register blocks:
+This PR adds the remaining sensors of the E3/DC power station device. They come from register blocks that newer firmware releases serve:
 
-- Battery limits, from release 2026_04: **Maximum charge power**, **Maximum discharge power**, **Stored energy** and **Battery capacity**. The library drops the block when the power station reports a battery capacity of 0, so these sensors exist only on a station that reports its capacity.
+- Battery limits, from release 2026_04: **Maximum charge power**, **Maximum discharge power**, **Stored energy** and **Battery capacity**. They are only created when the power station reports its battery capacity.
 - 32-bit power meter values: **SG Ready status**.
 - Grid control, from release 2025_06: **Active power failsafe timeout** and **Reactive power failsafe timeout**.
 - Inverter mode control, from release 2025_43: **Inverter mode**.
@@ -31,9 +31,7 @@ All of them except **Stored energy** are diagnostic sensors. The SG Ready status
 
 The E3/DC manual documents no values for the SG Ready status register. The sensor maps them to the four states of the SG Ready standard: blocked, normal operation, switch-on recommended and forced on. Any other value shows as unknown. On a real power station with surplus solar power, the register reads 3, which is switch-on recommended.
 
-During setup, `e3dc-ess-modbus` probes which optional blocks the firmware serves and sets the others to `None`. The sensor platform creates a sensor only if its block is served, so older firmware gets none of these sensors.
-
-The coordinator reads the four blocks on its existing 5-second poll. A poll now sends 7 requests, up from 1. The library spaces requests by 100 ms. A poll takes about 0.7 seconds and stays well below the 10 requests per second the power station accepts. The failsafe timeouts change only when something writes them, so a slower interval would be enough for them. A separate settings coordinator would add code for two disabled-by-default sensors, so it waits for the remote control PR that needs it.
+The integration only creates a sensor if the power station serves its block, so older firmware gets none of these sensors. The coordinator reads the new blocks on its existing 5-second poll.
 
 With this PR, `entity-category` and `entity-disabled-by-default` are done.
 
