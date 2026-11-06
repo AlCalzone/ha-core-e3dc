@@ -42,7 +42,7 @@ This PR adds config entry diagnostics to the E3/DC integration. After a failed p
 }
 ```
 
-The raw dump holds the undecoded registers of every block the integration reads: the identity, the power flows, the wallboxes and the power meters. It is meant for bug reports. A report from unusual firmware can be turned into a test seed without access to the hardware.
+The raw dump holds the undecoded registers of every block the integration reads: the identity, the power flows, the wallboxes and the power meters. It is meant for bug reports. A report from unusual firmware can be turned into a test seed without access to the hardware. Its keys are Modbus addresses, which are one lower than the register numbers in E3/DC's documentation.
 
 The serial number is redacted. The raw dump also leaves out its registers 40036 to 40051.
 
@@ -74,7 +74,7 @@ The coordinator raises a translated `UpdateFailed`, which does not say which rea
 
 - This PR fixes or closes issue: fixes #
 - This PR is related to issue: 
-- Link to documentation pull request: 
+- Link to documentation pull request: home-assistant/home-assistant.io#50275
 - Link to contributors documentation pull request: 
 - Link to frontend pull request: 
 
