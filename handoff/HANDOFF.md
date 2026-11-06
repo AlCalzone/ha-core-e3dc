@@ -19,7 +19,7 @@ All eight are pushed. Open pull requests: binary sensors as home-assistant/core#
 | Binary sensors | `e3dc-binary-sensors` at `c5eb6f5` | `e3dc-binary-sensors-docs` at `8ecaf48` | `binary-sensors-core.md`, `binary-sensors-docs.md` |
 | Reconfigure flow | `e3dc-reconfigure` at `21eb797` | `e3dc-reconfigure-docs` at `8a0a3ea` | `reconfigure-core.md`, `reconfigure-docs.md` |
 | Diagnostics | `e3dc-diagnostics` at `f5c70ee` | `e3dc-diagnostics-docs` at `3a98b5b` | `diagnostics-core.md`, `diagnostics-docs.md` |
-| Station sensors | `e3dc-station-sensors` at `94c05cd` | `e3dc-station-sensors-docs` at `0f8caa0` | `station-sensors-core.md`, `station-sensors-docs.md` |
+| Station sensors | `e3dc-station-sensors` at `b79f023` | `e3dc-station-sensors-docs` at `70ba416` | `station-sensors-core.md`, `station-sensors-docs.md` |
 
 The core branches start from core `dev` after the merge of #189806. The docs branches start from `e3dc-docs`, because #50091 isn't merged yet.
 
