@@ -40,7 +40,7 @@ This PR builds on home-assistant/home-assistant.io#50091, which adds the E3/DC p
     Please be sure to fill out additional details, if applicable.
 -->
 
-- Link to parent pull request in the codebase: 
+- Link to parent pull request in the codebase: home-assistant/core#190872
 - Link to parent pull request in the Brands repository: 
 - This PR fixes or closes issue: fixes #
 

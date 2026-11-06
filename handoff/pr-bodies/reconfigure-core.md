@@ -50,7 +50,7 @@ The `serial_mismatch` error at setup now tells the user to reconfigure the entry
 
 - This PR fixes or closes issue: fixes #
 - This PR is related to issue: 
-- Link to documentation pull request: 
+- Link to documentation pull request: home-assistant/home-assistant.io#50274
 - Link to contributors documentation pull request: 
 - Link to frontend pull request: 
 
