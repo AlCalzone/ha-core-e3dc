@@ -35,7 +35,7 @@ The integration only creates a sensor if the power station serves its block, so 
 
 With this PR, `entity-category` and `entity-disabled-by-default` are done.
 
-This PR depends on home-assistant/core#190888, which bumps `e3dc-ess-modbus` to 0.2.0 for the SG Ready status. Until that one is merged, this PR also shows the bump.
+This PR depends on home-assistant/core#190888, which bumps `e3dc-ess-modbus` to 0.2.0 for the SG Ready status. Until that one is merged, this PR also shows the bump. Release notes: https://github.com/AlCalzone/e3dc-ess-modbus/releases/tag/0.2.0, diff: https://github.com/AlCalzone/e3dc-ess-modbus/compare/0.1.0...0.2.0
 
 ## Type of change
 <!--
