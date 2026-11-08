@@ -6,9 +6,10 @@ This repository holds the full integration. Core takes it in small pull requests
 
 - [x] Fix the tests against core `dev`. Core now rejects a boolean from `async_setup_entry` and `async_unload_entry` (home-assistant/core#187778), and its snapshots now show `device_id` and `config_subentry_id`.
 - [x] Add `timeout-minutes: 20` to the CI job. The run for `8988414` hung until GitHub cancelled it after 6 hours.
-- [ ] Commit both, and check that CI is green.
+- [x] Commit both.
+- [ ] Fix CI on `main`. Since 2026-11-06 it fails at installing core and the test dependencies.
 - [x] Raise `homeassistant` in `hacs-e3dc/hacs.json` to `2026.11.0b0`. That is the first release with `async_unload_platforms_or_raise` (home-assistant/core#185989) and with `None` accepted from `async_setup_entry` (home-assistant/core#187778). 2026.10 treats `None` as a failed setup.
-- [ ] Ask in the [#core channel](https://discord.com/channels/330944238910963714/1475552721515053268) whether `e3dc` belongs in core. The guide wants a custom integration with a user base first. `e3dc` goes straight to core, with no custom integration release.
+- [x] Not needed any more, because home-assistant/core#189806 is merged: ask in the [#core channel](https://discord.com/channels/330944238910963714/1475552721515053268) whether `e3dc` belongs in core. The guide wants a custom integration with a user base first. `e3dc` goes straight to core, with no custom integration release.
 - [x] Test against a real power station.
 - [x] Remove the "not tested on real hardware" notes from the library README and from this repository's README.
 
@@ -75,26 +76,37 @@ Steps:
 - [x] In e3dc-ess-modbus, make `async_detect()` close the station when setup fails.
 - [x] Port the later review changes here: zeroconf discovery, sensors only for installed hardware, battery power positive while discharging, and aborting discovery when the probe fails.
 - [x] Get home-assistant/core#189806 merged.
-- [ ] Release e3dc-ess-modbus 0.1.1 with the next library change a follow-up pull request needs. Nothing here calls `async_detect()`, so the fix alone does not need a release.
-- [ ] Sign the CLA if the bot asks.
+- [x] Release the `async_detect()` fix. It went out in e3dc-ess-modbus 0.2.0 instead of 0.1.1.
+- [x] Sign the CLA if the bot asks.
 
 ## 5. Documentation pull request
 
 - [x] Trim `docs/e3dc.markdown` to the first pull request: `ha_platforms: [sensor]`, no reconfiguration section, no binary sensor, number, switch or wallbox sections, and no examples that need them.
 - [x] Target 2026.12 with `ha_release`. The 2026.12 beta starts at the end of November, so the core pull request has to be merged before then. Otherwise, bump the release.
 - [x] Open it against the `next` branch of home-assistant.io and link it from the core pull request: home-assistant/home-assistant.io#50091, as a draft.
-- [ ] Get home-assistant/home-assistant.io#50091 merged.
+- [x] Get home-assistant/home-assistant.io#50091 merged.
 
 ## 6. Follow-up pull requests
 
-One feature each, in roughly this order. Each one updates `quality_scale.yaml`, the docs page and the tests. `handoff/HANDOFF.md` has the state of the first four.
+One feature each. Each one updates `quality_scale.yaml`, the docs page and the tests. Since the station sensors, these are written in the core fork first. The changes here lag behind core and need porting back.
 
-- [ ] Remaining station sensors: battery limits, failsafe timeouts, inverter mode, SG Ready.
-- [ ] Binary sensors for the EMS status bits.
-- [ ] Power meter and inverter devices with their sensors.
-- [ ] Wallbox devices with sensors and switches, added when the power station reports them.
-- [ ] Stale device removal.
-- [ ] Reconfigure flow.
-- [ ] Diagnostics.
-- [ ] Remote control: the settings coordinator, setpoint holds, numbers and switches.
-- [ ] Raise the declared tier once its rules are all met.
+Merged in core, docs still open against `next`:
+
+- [x] Binary sensors for the EMS status bits: home-assistant/core#190858. Docs: home-assistant/home-assistant.io#50272.
+- [x] Reconfigure flow: home-assistant/core#190872. Docs: home-assistant/home-assistant.io#50274.
+- [x] Diagnostics: home-assistant/core#190876. Docs: home-assistant/home-assistant.io#50275.
+- [x] Bump e3dc-ess-modbus to 0.2.0: home-assistant/core#190888.
+- [x] Remaining station sensors: battery limits, failsafe timeouts, inverter mode, SG Ready. home-assistant/core#190878. Docs: home-assistant/home-assistant.io#50276.
+- [x] Raise the declared tier to Silver: home-assistant/core#190972.
+- [ ] Get the four docs pull requests merged.
+
+Still to do:
+
+- [ ] Power meter and inverter devices with their sensors: home-assistant/core#191296 and home-assistant/home-assistant.io#50340, both drafts. Tested on the real power station.
+- [ ] Remote control: setpoint holds, numbers and switches. Branches `e3dc-remote-control` on the core fork and `e3dc-remote-control-docs` on the docs fork, based on `dev` and `next`. No pull requests yet. Parked until there is time to test the writes on the real power station.
+- [ ] Wallbox devices with sensors and switches, added when the power station reports them. Comes after remote control, because both add to `switch.py`.
+- [ ] Stale device removal, on top of the power meter and inverter devices.
+- [ ] Dynamic devices. `dynamic-devices` is `todo` again, because two cases still need a reload:
+  - An inverter slot that refuses or times out during setup. `E3dcPowerStation` only looks for inverters during setup. Add a way to look at the missing slots again to e3dc-ess-modbus, release it, and bump it in core in its own pull request. Then have the coordinator call it now and then.
+  - A wallbox configured after setup. Handle it in the wallbox pull request.
+- [ ] Raise the declared tier to Gold once its rules are all met.
