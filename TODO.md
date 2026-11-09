@@ -88,9 +88,9 @@ Steps:
 
 ## 6. Follow-up pull requests
 
-One feature each. Each one updates `quality_scale.yaml`, the docs page and the tests. Since the station sensors, these are written in the core fork first. The changes here lag behind core and need porting back.
+One feature each. Each one updates `quality_scale.yaml`, the docs page and the tests. Since the station sensors, these are written in the core fork first. This repository only keeps the notes and doesn't follow the code anymore.
 
-Merged in core, docs still open against `next`:
+Merged in core and docs:
 
 - [x] Binary sensors for the EMS status bits: home-assistant/core#190858. Docs: home-assistant/home-assistant.io#50272.
 - [x] Reconfigure flow: home-assistant/core#190872. Docs: home-assistant/home-assistant.io#50274.
@@ -98,7 +98,7 @@ Merged in core, docs still open against `next`:
 - [x] Bump e3dc-ess-modbus to 0.2.0: home-assistant/core#190888.
 - [x] Remaining station sensors: battery limits, failsafe timeouts, inverter mode, SG Ready. home-assistant/core#190878. Docs: home-assistant/home-assistant.io#50276.
 - [x] Raise the declared tier to Silver: home-assistant/core#190972.
-- [ ] Get the four docs pull requests merged.
+- [x] Get the four docs pull requests merged.
 
 Still to do:
 
