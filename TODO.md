@@ -102,7 +102,11 @@ Merged in core, docs still open against `next`:
 
 Still to do:
 
-- [ ] Power meter and inverter devices with their sensors: home-assistant/core#191296 and home-assistant/home-assistant.io#50340, both drafts. Tested on the real power station.
+- [ ] Power meter and inverter devices with their sensors: home-assistant/core#191296 and home-assistant/home-assistant.io#50340, both drafts. Tested on the real power station. Each device is named after its slot, e.g. **Inverter 1** and **Power meter 2**. What's left:
+  - [ ] Get home-assistant/core#191296 and home-assistant/home-assistant.io#50340 merged.
+  - [ ] Move the part discovery from `sensor.py` into the coordinator. It should keep the present slots per kind once per poll. `E3dcPartSensor.available` then becomes a set lookup, and stale device removal gets a place to live. Plugwise does it this way.
+  - [ ] Check the grid meter in one place. `_grid_meter` and the `exists_fn` of the grid phase sensors ignore `is_installed`, but `_installed_meters` checks it.
+  - [ ] Decide whether inverter slots that answer without an inverter should be polled less often. All 8 slots cost 3 Modbus requests per poll, against 1 for slot 0 alone. That probably needs a knob in e3dc-ess-modbus.
 - [ ] Remote control: setpoint holds, numbers and switches. Branches `e3dc-remote-control` on the core fork and `e3dc-remote-control-docs` on the docs fork, based on `dev` and `next`. No pull requests yet. Parked until there is time to test the writes on the real power station.
 - [ ] Wallbox devices with sensors and switches, added when the power station reports them. Comes after remote control, because both add to `switch.py`.
 - [ ] Stale device removal, on top of the power meter and inverter devices.
